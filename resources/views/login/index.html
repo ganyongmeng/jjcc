@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="csrf-token" content="{{csrf_token()}}">
+<title>登录</title>
+<link rel="stylesheet" href="/css/index.css">
+<style>
+body{background-color:#2d3a4b;}
+.box-card {width: 400px;margin:80px auto;}
+.el-card__body {padding:30px;}
+.el-button--primary{width:100%;}
+.title{margin-top:0;margin-bottom:25px;height: 50px;line-height: 50px;}
+</style>
+</head>
+<body>
+<div id="app">
+    <el-card class="box-card">
+        <h2 class="title"><img src="/img/logo.png" style="width:50px;margin-left: 12px;float:left;margin-right:8px;">家简呈出管理系统</h2>
+        
+        <el-form :model="form" ref="form2" class="demo-ruleForm">
+          <el-form-item prop="login_account" :rules="{required:true,message:'账号不能为空',trigger:'blur'}">
+            <el-input type="text" placeholder="请输入账号" v-model="form.login_account" maxlength="20"></el-input>
+          </el-form-item>
+          <el-form-item  prop="login_passwd" :rules="{required:true,message:'密码不能为空',trigger:'blur'}">
+            <el-input type="password" placeholder="请输入密码" @keyup.enter.native="submitForm"  maxlength="20" v-model="form.login_passwd"></el-input>
+          </el-form-item>
+          <el-form-item prop="login_captcha" :rules="{required:true,message:'验证码不能为空',trigger:'blur'}">
+            <el-col :span="13">
+              <el-input type="text" placeholder="请输入验证码" v-model="form.login_captcha" 
+              @keyup.enter.native="submitForm" maxlength="20"></el-input>
+            </el-col>
+            <el-col :span="8" style="float:right;text-align: right;">
+              <img id="captcha" @click="refreshCaptcha" src="/login/captcha" style="border:solid 1px #bfcbd9;cursor: pointer;">
+            </el-col>
+          </el-form-item>
+          <el-form-item >
+            <el-button type="primary" @click="submitForm">登录</el-button>
+          </el-form-item>
+        </el-form>
+    </el-card>
+</div>
+<script src="/js/vue.min.js"></script>
+<script src="/js/index.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+var appV = new Vue({
+    el: '#app',
+    data: {
+      form:{login_account:'',login_passwd:'',login_captcha:''}
+    },
+    methods: {
+        submitForm: function(){
+          var self = this;
+          this.$refs['form2'].validate(function(valid){
+            if(valid){
+              httpPost('/dologin',self.form,function(data){
+                if (data.code === 200){
+                  window.location.href = '/admin';
+                }else{
+                  self.refreshCaptcha();
+                  self.$message.error(data.msg);
+                }
+              });
+            }
+          });
+        },
+        refreshCaptcha: function(){
+          $('#captcha').attr('src','/login/captcha?__='+Math.random());
+        }
+    }
+})
+</script>
+</body>
+</html>

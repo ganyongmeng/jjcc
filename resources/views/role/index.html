@@ -1,0 +1,165 @@
+@extends('com.default')
+
+@section('content')
+<div class="lark-header">
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+        <el-form-item>
+            <el-input v-model="searchForm.name" placeholder="输入角色名称查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" icon="search" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
+        </el-form-item>
+        <div class="right_btn_box">
+            <el-button type="primary" icon="plus" @click="openEditForm('add')">添加角色</el-button>
+        </div>
+    </el-form>
+</div>
+<div class="lark-table">
+    <el-table :data="roleData.data" v-loading="data_loading" element-loading-text="loading" border style="width: 100%">
+        <el-table-column prop="name" label="角色名称" width="220"></el-table-column>
+        <el-table-column prop="desc" label="角色说明" min-width="280"></el-table-column>
+        <el-table-column prop="create_time" label="创建时间" align="center" width="180"></el-table-column>
+        <el-table-column prop="update_time" label="最后更新时间" align="center" width="180"></el-table-column>
+        <el-table-column label="操作" width="220" align="center">
+            <template scope="scope">
+                <template v-if="scope.row.id !== {{SUPER_ADMIN_ROLE_ID}}">
+                    <el-button size="small" @click="openEditForm('edit',scope.row)">编辑</el-button>
+                    <el-button size="small" @click="auth(scope.row.id)">授权</el-button>
+                    <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+                </template>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination @current-change="handleCurrentChange" :current-page="roleData.current_page"
+      :page-size="roleData.per_page" layout="total,  prev, pager, next, jumper" :total="roleData.total">
+    </el-pagination>
+</div>
+@include('role.add')
+@include('role.tree')
+@endsection
+@section('script')
+<script>
+var vapp = new Vue({
+    el: '.content-box',
+    data:{
+        searchForm: {name:'',current_page:1},
+        roleData: {},
+        data_loading: false,
+        menuData: [],
+        authVisible: false,
+        editFormVisible: false,
+        dialogTitle:'',
+        editForm: {name:'', desc:''},
+        authData: {role_id:0,menu_id:[]}
+    },
+    created:function(){
+        this.search();
+        var self = this;
+        httpGet('/menu/option',{},function(data){
+            self.menuData = data.data;
+        });
+    },
+    methods: {
+        search: function(){
+            var self = this;
+            this.data_loading = true;
+            httpPost('/role/list',this.searchForm,function(data){
+                self.data_loading = false;
+                if (data.code === 200){
+                    self.roleData = data.data;
+                }else{
+                    this.$message.error(data.msg);
+                }
+            });
+        },
+        handleCurrentChange: function(index){
+            this.searchForm.current_page = index;
+            this.search();
+        },
+        reset: function(){
+            this.searchForm = {name:'',current_page:1};
+            this.search();
+        },
+        openEditForm: function(type,data){
+            this.editFormVisible = true;
+            if (this.$refs['editForm']!==undefined){
+                this.$refs['editForm'].resetFields();
+            }
+            if (type=='add'){
+                this.dialogTitle = '添加角色';
+                this.editForm = {name:'', desc:''};
+            }else{
+                this.dialogTitle = '编辑角色';
+                this.editForm = JSON.parse(JSON.stringify(data));
+                delete this.editForm.create_time;
+                delete this.editForm.update_time;
+            }
+        },
+        auth: function(id){
+            var self = this;
+            this.authData.role_id = id;
+            httpGet('/role/menu',{role_id:id},function(data){
+                if (data.code === 200){
+                    self.authData.menu_id = data.data;
+                    if (self.$refs['authtree']!==undefined){
+                        self.$refs['authtree'].setCheckedKeys(self.authData.menu_id);
+                    }
+                    self.authVisible=true;
+                }else{
+                    self.$message.error('获取数据失败');
+                }
+            });
+        },
+        closeEditForm: function(){
+            this.editFormVisible = false;
+        },
+        remove:function(id){
+            var self = this;
+            this.$confirm('删除后拥有该角色的用户将会失效，确定删除？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(function() {
+                httpPost('/role/remove',{id:id},function(data){
+                    if (data.code === 200){
+                        self.$message.success('删除角色成功');
+                        self.search();
+                    }else{
+                        self.$message.error(data.msg);
+                    }
+                });
+            }).catch(function(){});
+        },
+        saveRole: function(){
+            var self = this;
+            this.$refs['editForm'].validate(function(valid){
+                if(valid){
+                    httpPost('/role/save',self.editForm,function(data){
+                        if (data.code === 200){
+                            self.editFormVisible = false;
+                            self.$message.success('保存角色成功');
+                            self.search();
+                        }else{
+                            self.$message.error(data.msg);
+                        }
+                    });
+                }
+            });
+        },
+        saveAuth: function(){
+            var self = this;
+            this.authData.menu_id = this.$refs.authtree.getCheckedKeys();
+            httpPost('/role/set/auth',this.authData,function(data){
+                if (data.code === 200){
+                    self.authVisible = false;
+                    self.$message.success('保存角色成功');
+                    self.search();
+                }else{
+                    self.$message.error(data.msg);
+                }
+            });
+        }
+    }
+});  
+</script>
+@endsection

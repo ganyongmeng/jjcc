@@ -1,0 +1,14 @@
+<el-dialog :title="dialogTitle" size="tiny" :visible.sync="editFormVisible" :close-on-click-modal="false">
+    <el-form :model="editForm" ref="editForm" label-width="80px" label-position="right">
+        <el-form-item label="角色名称" prop="name" required :rules="{required:true,message:'必须输入'}">
+            <el-input v-model="editForm.name" maxlength="20" placeholder="输入角色名称"></el-input>
+        </el-form-item>
+        <el-form-item label="角色说明" prop="desc">
+            <el-input v-model="editForm.desc" maxlength="64" placeholder="输入角色说明"></el-input>
+        </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="closeEditForm">取 消</el-button>
+        <el-button type="primary" @click="saveRole">确 定</el-button>
+    </div>
+</el-dialog>

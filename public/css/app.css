@@ -1,0 +1,92 @@
+html,body{margin: 0;padding: 0;height: 100%;width: 100%;background-color:#efefef}
+.nav-menu{border-radius: 0;width: 220px;height: 100%;position: fixed;top:0;left:0;
+    z-index: 1001;overflow-x: hidden;background-color: #324157;}
+.el-menu{border-radius: 0;height: 100%;}
+.el-menu .el-menu-item a{color:#bfcbd9;text-decoration: none;display:block;width:100%;height:100%;}
+.el-menu .el-menu-item.is-active a{color: #20a0ff;}
+
+.main-container{margin-left: 220px;min-height: 400px;}
+.navbar{height: 50px;line-height: 50px;border-radius: 0!important;background-color: #fff;
+    color: #333;border-bottom: 1px solid #ddd;padding: 0 15px 0 15px;
+}
+.el-icon-false{font-size: 14px;}
+.el-message-box{margin-top: 180px;vertical-align: top;}
+.navbar h4{margin: 0;padding: 0;display: inline-block;font-weight: normal;}
+.navbar .uif{float: right;}
+.navbar .el-dropdown{float: right;}
+.navbar .el-dropdown-link{cursor: pointer;}
+.content-box{padding: 16px;}
+.lark-header{background-color: #fff;padding: 25px 25px 15px 25px;}
+.tag-header{background-color: #fff;padding: 10px 25px 10px 25px;}
+.lark-header .el-form-item {margin-bottom: 0px;}
+.el-form-item .el-form-item__label{width: 80px;}
+.lark-header .el-form-item .el-form-item__content .el-select{width: 194px;}
+.lark-header .el-form-item .el-input{width: 169px;}
+.lark-header .el-form-item .el-select .el-input{width: 100%;}
+.lark-header .el-form-item .el-date-editor--daterange{width: 220px;}
+.lark-header .right_btn_box{float: right;}
+.lark-table{padding: 0 0 10px 0;margin-top: 20px;}
+.lark-table .el-pagination{margin-top: 10px;padding: 5px 10px 15px 0;}
+.el-dialog__header{font-size: 16px;color: #333;height: 48px;line-height: 48px;padding: 0 20px;border: 1px solid #eee;}
+.el-dialog__headerbtn{height: 48px;line-height: 48px;}
+.el-dialog__body {padding: 30px 40px 20px 40px;}
+.el-dialog__footer {padding: 10px 40px 15px;}
+.logo_box{height: 50px;color: #fff;font-size: 22px;font-weight: 600px;line-height: 50px;font-style:oblique}
+.menu_title{font-weight: 700;}
+.el-tree {max-height: 400px;overflow-y: scroll;}
+.el-form--inline .el-form-item__label{font-weight: 600;}
+.el-row {margin-bottom: 10px;}
+.el-row:last-child {margin-bottom: 0;}
+.a-link{color:#20a0ff;cursor:pointer;}
+
+[v-cloak] {
+    display: none;
+}
+/* 分页样式 覆盖 */
+.el-pagination{
+    text-align: right;
+}
+.el-pagination .el-pagination__total{
+    font-size:14px;color:#4b5869;margin:0 12px;height:36px;line-height:36px;
+}
+
+.el-pagination .el-pagination__jump{
+    height:36px;line-height:36px;margin-left:12px;
+}
+
+.el-pagination .el-pagination__editor{
+    height:36px;line-height:36px;width:48px;padding:0;overflow:hidden;
+}
+
+.el-icon-more:before {
+    content: "..."; position: relative;top:-4px;
+}
+
+.el-pager li,.el-pager li.active+li{
+    margin-left:6px;border: 1px solid #e6e6e6;font-size:14px;height:34px;line-height:34px;min-width:16px;padding:0 10px;box-sizing:inherit;border-radius:2px;
+}
+
+.el-pager li:hover,.el-pager li.active+li:hover{
+    border-color:#0994ff;
+}
+
+.el-pagination .btn-prev,.el-pagination .btn-next{
+    border-radius: 2px;border: 1px solid #e6e6e6;font-size:14px;height:36px;width:36px;line-height:36px;
+}
+
+.el-pagination .btn-next{
+    margin-left:6px;
+}
+
+.el-pagination .btn-prev:hover,.el-pagination .btn-next:hover{
+    border-color:#0994ff;
+}
+
+.el-pagination .btn-prev.disabled:hover,.el-pagination .btn-next.disabled:hover{
+    border-color:#e6e6e6;
+}
+
+
+.el-pager li.btn-quicknext, .el-pager li.btn-quickprev{
+    line-height:34px;
+}

@@ -1,0 +1,150 @@
+@extends('com.default')
+
+@section('content')
+<div class="lark-header">
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+        <el-form-item>
+            <el-input v-model="searchForm.name" placeholder="输入菜单名查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-input v-model="searchForm.flag" placeholder="输入菜单标识查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-select v-model="searchForm.pid" placeholder="请选择">
+                <el-option label="全部" value="">全部</el-option>
+                <el-option v-for="item in p_menu" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" icon="search" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
+        </el-form-item>
+        <div class="right_btn_box">
+            <el-button type="primary" icon="plus" @click="openEditForm('add')">添加菜单</el-button>
+        </div>
+    </el-form>
+</div>
+<div class="lark-table">
+    <el-table :data="menuData.data" v-loading="data_loading" element-loading-text="loading" border style="width: 100%">
+        <el-table-column prop="name" label="菜单名称" width="200"></el-table-column>
+        <el-table-column prop="flag" label="菜单标识" width="270"></el-table-column>
+        <el-table-column prop="icon" label="图标" align="center" width="200"></el-table-column>
+        <el-table-column prop="seq" label="排序号" align="center" width="100"></el-table-column>
+        <el-table-column prop="link" label="菜单链接" min-width="300"></el-table-column>
+        <el-table-column prop="pname" label="父菜单" width="140">
+            <template scope="scope">
+                <template v-if="scope.row.pname==null">
+                    <div><el-tag type="success" close-transition>顶级菜单</el-tag></div>
+                </template>
+                <template v-else>
+                    @{{ scope.row.pname }}
+                </template>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="160" align="center">
+            <template scope="scope">
+                <el-button size="small" @click="openEditForm('edit',scope.row)">编辑</el-button>
+                <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination @current-change="handleCurrentChange" :current-page="menuData.current_page"
+      :page-size="menuData.per_page" layout="total,  prev, pager, next, jumper" :total="menuData.total">
+    </el-pagination>
+</div>
+@include('menu.add')
+@endsection
+@section('script')
+<script>
+var vapp = new Vue({
+    el: '.content-box',
+    data:{
+        searchForm: {name:'',flag:'',pid:'',current_page:1},
+        menuData: {},
+        data_loading: false,
+        p_menu: [],
+        editFormVisible: false,
+        dialogTitle:'',
+        editForm: {pid:0, name:'', link:'', flag:'', icon:'', seq:100},
+    },
+    created:function(){
+        this.search();
+        var self = this;
+        httpGet('/menu/p/option',{},function(data){
+            self.p_menu = data.data;
+        });
+    },
+    methods: {
+        search: function(){
+            var self = this;
+            this.data_loading = true;
+            httpPost('/menu/list',this.searchForm,function(data){
+                self.data_loading = false;
+                if (data.code === 200){
+                    self.menuData = data.data;
+                }else{
+                    this.$message.error(data.msg);
+                }
+            });
+        },
+        handleCurrentChange: function(index){
+            this.searchForm.current_page = index;
+            this.search();
+        },
+        reset: function(){
+            this.searchForm = {name:'',flag:'',pid:'',current_page:1};
+            this.search();
+        },
+        openEditForm: function(type,data){
+            this.editFormVisible = true;
+            if (this.$refs['editForm2']!==undefined){
+                this.$refs['editForm2'].resetFields();
+            }
+            if (type=='add'){
+                this.dialogTitle = '添加菜单';
+                this.editForm = {pid:0, name:'', link:'', flag:'', icon:'', seq:100};
+            }else{
+                this.dialogTitle = '编辑菜单';
+                this.editForm = JSON.parse(JSON.stringify(data));
+                delete this.editForm.pname;
+            }
+        },
+        closeEditForm: function(){
+            this.editFormVisible = false;
+        },
+        remove:function(id){
+            var self = this;
+            this.$confirm('确定要删除菜单？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(function() {
+                httpPost('/menu/remove',{id:id},function(data){
+                    if (data.code === 200){
+                        self.$message.success('删除菜单成功');
+                        self.search();
+                    }else{
+                        self.$message.error(data.msg);
+                    }
+                });
+            }).catch(function(){});
+        },
+        saveMenu: function(){
+            var self = this;
+            this.$refs['editForm2'].validate(function(valid) {
+                if(valid){
+                    httpPost('/menu/save',self.editForm,function(data){
+                        if (data.code === 200){
+                            self.editFormVisible = false;
+                            self.$message.success('保存菜单成功');
+                            self.search();
+                        }else{
+                            self.$message.error(data.msg);
+                        }
+                    });
+                }
+            });
+        }
+    }
+});  
+</script>
+@endsection

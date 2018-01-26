@@ -1,0 +1,9 @@
+<el-dialog title="角色授权" size="tiny" :visible.sync="authVisible" :close-on-click-modal="false">
+    <el-tree :data="menuData" ref="authtree" show-checkbox="true" node-key="id" check-strictly="true"
+        default-expand-all="true" :default-checked-keys="authData.menu_id" >
+    </el-tree>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="authVisible=false">取 消</el-button>
+        <el-button type="primary" @click="saveAuth">确 定</el-button>
+    </div>
+</el-dialog>

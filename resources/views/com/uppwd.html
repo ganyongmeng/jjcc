@@ -1,0 +1,17 @@
+<el-dialog title="修改密码" size="tiny" :visible.sync="upPwdFormVisible" :close-on-click-modal="false">
+    <el-form :model="upPwdForm" ref="upPwdForm" :rules="validate_rules" label-width="100px" label-position="right">
+        <el-form-item label="当前密码" prop="old_passwd" required>
+            <el-input v-model="upPwdForm.old_passwd" type="password" maxlength="20" placeholder="输入当前密码"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="passwd1" required>
+            <el-input v-model="upPwdForm.passwd1" type="password" maxlength="20" placeholder="输入新密码"></el-input>
+        </el-form-item>
+        <el-form-item label="确认新密码" prop="passwd2" required>
+            <el-input v-model="upPwdForm.passwd2" type="password" maxlength="20" placeholder="再次输入新密码"></el-input>
+        </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+        <el-button @click="upPwdFormVisible=false">取 消</el-button>
+        <el-button type="primary" @click="updatePwd">确 定</el-button>
+    </div>
+</el-dialog>

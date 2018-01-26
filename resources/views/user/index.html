@@ -1,0 +1,217 @@
+@extends('com.default')
+
+@section('content')
+<div class="lark-header">
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+        <el-form-item>
+            <el-input v-model="searchForm.account" placeholder="输入登录账号查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-input v-model="searchForm.name" placeholder="输入姓名查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-input v-model="searchForm.mobile" placeholder="输入手机号查询"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" icon="search" @click="search">查询</el-button>
+            <el-button @click="reset">重置</el-button>
+        </el-form-item>
+        <div class="right_btn_box">
+            <el-button type="primary" icon="plus" @click="openEditForm('add')">添加账号</el-button>
+        </div>
+    </el-form>
+</div>
+<div class="lark-table">
+    <el-table :data="userData.data" v-loading="data_loading" element-loading-text="loading" border style="width: 100%">
+        <el-table-column prop="name" label="姓名" width="150"></el-table-column>
+        <el-table-column prop="account" label="账号名" width="160"></el-table-column>
+        <el-table-column prop="mobile" label="手机号" align="center" width="150"></el-table-column>
+        <el-table-column prop="role" label="角色" min-width="200" align="center" ></el-table-column>
+        <el-table-column prop="last_login_time" label="最后登录时间" align="center" width="200"></el-table-column>
+        <el-table-column prop="last_login_ip" label="最后登录IP" align="center" width="150"></el-table-column>
+        <el-table-column label="状态" width="80" align="center">
+            <template scope="scope">
+                <template v-if="scope.row.status === 0">
+                    正常
+                </template>
+                <template v-else>
+                    禁用
+                </template>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" width="250" align="center">
+            <template scope="scope">
+                <el-button size="small" @click="openEditForm('edit',scope.row)">编辑</el-button>
+                <el-button size="small" @click="resetpw(scope.row.id,scope.row.account)">重置密码</el-button>
+                <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination @current-change="handleCurrentChange" :current-page="userData.current_page"
+      :page-size="userData.per_page" layout="total, prev, pager, next, jumper" :total="userData.total">
+    </el-pagination>
+</div>
+@include('user.add')
+@endsection
+@section('script')
+<script>
+var checkPwd1 = function(rule, value, callback){
+    if (vapp.isAdd){
+        if (value === '') {
+            callback(new Error('请再次输入密码'));
+        }else if(value.length<6 || value.length>20){
+            callback(new Error('密码必须是6-20位'));
+        }else{
+            callback();
+        }
+    }else{
+        callback();
+    }
+};
+var checkPwd2 = function(rule, value, callback){
+    if (vapp.isAdd){
+        if (value === '') {
+            callback(new Error('请再次输入密码'));
+        }else if(value.length<6 || value.length>20){
+            callback(new Error('密码必须是6-20位'));
+        }else if (value !== vapp.editForm.passwd1) {
+            callback(new Error('两次输入密码不一致!'));
+        } else {
+            callback();
+        }
+    }else{
+        callback();
+    }
+};
+var vapp = new Vue({
+    el: '.content-box',
+    data:{
+        searchForm: {account:'',name:'',mobile:'',current_page:1},
+        userData: {},
+        data_loading: false,
+        editFormVisible: false,
+        dialogTitle:'',
+        isAdd: true,
+        roles:[],
+        editForm: {account:'',name:'',mobile:'',passwd1:'',passwd2:'',status:0,auths:[]},
+        validate_rules: {
+            account: [{required:true,message:'必须输入', trigger: 'blur'}],
+            name: [{required:true,message:'必须输入', trigger: 'blur'}],
+            //mobile: [{required:true,message:'必须输入', trigger: 'blur'}],
+            passwd1: [{validator: checkPwd1, trigger: 'blur'}],
+            passwd2: [{ validator: checkPwd2, trigger: 'blur'}],
+            auths: [{ validator: function(rule, value, callback){
+                if (value.length<=0){
+                    callback(new Error('至少选择一个角色'));
+                }else{
+                    callback();
+                }
+            }}],
+        }
+    },
+    created:function(){
+        this.search();
+        var self = this;
+        httpGet('/role/option',{},function(data){
+            self.roles = data.data;
+        });
+    },
+    methods: {
+        search: function(){
+            var self = this;
+            this.data_loading = true;
+            httpPost('/user/list',this.searchForm,function(data){
+                self.data_loading = false;
+                if (data.code === 200){
+                    self.userData = data.data;
+                }else{
+                    this.$message.error(data.msg);
+                }
+            });
+        },
+        handleCurrentChange: function(index){
+            this.searchForm.current_page = index;
+            this.search();
+        },
+        reset: function(){
+            this.searchForm = {account:'',name:'',mobile:'',current_page:1};
+            this.search();
+        },
+        openEditForm: function(type,data){
+            if (this.$refs['editForm']!==undefined){
+                this.$refs['editForm'].resetFields();
+            }
+            if (type=='add'){
+                this.isAdd = true;
+                this.dialogTitle = '添加账号';
+                this.editForm = {account:'',name:'',mobile:'',passwd1:'',passwd2:'',status:0,auths:[]};
+            }else{
+                this.isAdd = false;
+                this.dialogTitle = '编辑账号';
+                this.editForm = JSON.parse(JSON.stringify(data));
+                delete this.editForm.last_login_time;
+                delete this.editForm.role;
+                delete this.editForm.last_login_ip;
+            }
+            this.editFormVisible = true;
+        },
+        remove:function(id){
+            var self = this;
+            this.$confirm('确定要删除账号？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(function() {
+                httpPost('/user/remove',{id:id},function(data){
+                    if (data.code === 200){
+                        self.$message.success('删除账号成功');
+                        self.search();
+                    }else{
+                        self.$message.error(data.msg);
+                    }
+                });
+            }).catch(function(){});
+        },
+        resetpw: function(id,account){
+            var self = this;
+            const h = this.$createElement;
+            this.$confirm(h('p', null, [
+                    h('span', null, '确定将账号 '),
+                    h('strong', { style: 'color: red' }, account),
+                    h('span', null, ' 的登录密码重置为'),
+                    h('strong', { style: 'color: red' }, ' {{RESET_PASSWD}} '),
+                    h('span', null, '吗？'),
+                ]),
+                '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(function(){
+                httpPost('/user/passwd/reset',{id:id},function(data){
+                    if (data.code === 200){
+                        self.$message.success('密码重置成功');
+                        self.search();
+                    }else{
+                        self.$message.error(data.msg);
+                    }
+                });
+            }).catch(function(){});
+        },
+        save: function(){
+            var self = this;
+            this.$refs['editForm'].validate(function(valid){
+                if(valid){
+                    httpPost('/user/save',self.editForm,function(data){
+                        if (data.code === 200){
+                            self.editFormVisible = false;
+                            self.$message.success('保存账号成功');
+                            self.search();
+                        }else{
+                            self.$message.error(data.msg);
+                        }
+                    });
+                }
+            });
+        },
+    }
+});  
+</script>
+@endsection
