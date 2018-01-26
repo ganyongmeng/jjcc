@@ -20,19 +20,17 @@ Route::any('/sendchecktask','SendDataMail@checktask');
 
 
 //官网主页
-
-
 Route::group(["prefix"=>"/",'namespace'=>'Home'],function (){
     Route::any('/','Index@index');
     Route::any('/index','Index@index');
     Route::any('/home','Index@home');
+    Route::any('/test','Index@test');
 });
 
 
 
 //登录检查
 Route::middleware('checkLogin')->group(function(){
-    Route::any('/admin', 'Index@index');
     Route::group(["prefix" => "user"], function () {
         Route::any('index', 'User@index');
         Route::any('list', 'User@list');
@@ -58,6 +56,14 @@ Route::middleware('checkLogin')->group(function(){
         Route::any('remove', 'Role@remove');
         Route::any('set/auth', 'Role@setAuth');
     });
+
+
+    Route::any('/admin', 'Index@index');
+    Route::any('/common/file/upload', 'File@upload');
+    Route::group(['prefix'=>'admin','namespace'=>'Home'],function(){
+        Route::any('banner','Banner@index');
+    });
+
 
 
 });

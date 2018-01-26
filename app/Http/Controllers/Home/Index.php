@@ -27,5 +27,12 @@ class Index extends Controller
         ];
         return view('home/home',$tempData);
     }
+    public function test(){
+        $tempData = [
+            'title' => '首页',
+            'active_menu_flag' => '',
+        ];
+        return view('home/test',$tempData);
+    }
 
 }
