@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Home;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;
 
-class Home extends Controller
+class Index extends Controller
 {
     private $logic;
     public function __construct(){

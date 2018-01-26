@@ -20,9 +20,14 @@ Route::any('/sendchecktask','SendDataMail@checktask');
 
 
 //官网主页
-Route::any('/','Home@index');
-Route::any('/index','Home@index');
-Route::any('/home','Home@home');
+
+
+Route::group(["prefix"=>"/",'namespace'=>'Home'],function (){
+    Route::any('/','Index@index');
+    Route::any('/index','Index@index');
+    Route::any('/home','Index@home');
+});
+
 
 
 //登录检查
