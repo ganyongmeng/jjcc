@@ -68,6 +68,7 @@ Route::middleware('checkLogin')->group(function(){
     Route::any('/common/file/upload', 'File@upload');
     Route::group(['prefix'=>'admin','namespace'=>'Home'],function(){
         Route::any('banner','Banner@index');
+        Route::any('banner/edit','Banner@banneredit');
     });
 
 
