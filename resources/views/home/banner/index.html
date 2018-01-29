@@ -1,0 +1,124 @@
+@extends('com.default')
+@section('style')
+<style type="text/css">
+    .cont-box{
+    padding:0 15px;
+    background: #FFFFFF;
+}
+
+.input-width .el-input{width:284px;}
+.pic-uploader.hide-upload-btn .el-upload{
+    display:none;
+}
+.cont-box .el-textarea{width:360px;}
+.cont-box .el-radio__input.is-checked+.el-radio__label{color:#5a5e66;}
+</style>
+@endsection
+@section('content')
+<div class="cont-box">
+    <el-form :model="editForm" ref="editForm" label-width="120px"  label-position="right">
+    <div style="padding-top: 30px;">
+        <h3></h3>
+    </div>
+        <el-row>
+            <el-col :span="24">
+                <el-form-item label="轮播时间:" prop="b_time"  required>
+                    <el-select v-model="editForm.b_time">
+                        <el-option :label="1" value="1">1s</el-option>
+                        <el-option :label="2" value="2">2s</el-option>
+                        <el-option :label="3" value="3">3s</el-option>
+                        <el-option :label="4" value="4">4s</el-option>
+                        <el-option :label="5" value="5">5s</el-option>
+                    </el-select>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        
+        <el-row>
+            <el-col :span="24">
+                <el-form-item label="上传banner:">
+                    <el-upload 
+                      action="/common/file/upload"
+                      list-type="picture-card"
+                      name="f1"
+                      :data="{file_id:'f1',module:'banner_file'}"
+                      :on-preview="handlePictureCardPreview"
+                      :on-remove="handleRemove"
+                      :headers="uploadheaers">
+                      <i class="el-icon-plus"></i>
+                    </el-upload>
+                    <el-dialog :visible.sync="dialogVisible" size="tiny">
+                      <img width="100%" :src="dialogImageUrl" alt="">
+                    </el-dialog>
+                </el-form-item>
+            </el-col>
+        </el-row>
+        
+        <el-row>
+            <el-col>
+                <el-form-item label="名称:" prop="name" required :class="'input-width'">
+                    <el-input v-model="editForm.name" maxlength="20" placeholder="名称"></el-input>
+                </el-form-item>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col>
+                <el-form-item label="banner指向:" prop="name" required :class="'input-width'">
+                    <el-input v-model="editForm.name" maxlength="20" placeholder="名称"></el-input>
+                </el-form-item>
+            </el-col>
+        </el-row>
+
+    </el-form>
+</div>
+@endsection
+@section('script')
+<script>
+
+var app = new Vue({
+    el: '.content-box',
+    data:{
+        cityData:[],
+        editForm: {name:'',b_time:5},
+        dialogVisible:false,
+        dialogImageUrl:'',
+        uploadheaers:''
+    },
+    created:function(){
+        this.uploadheaers = {'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')};
+    },
+    methods: {
+        
+        resetForm:function(formName) {
+            this.$refs[formName].resetFields();
+        },
+        uploadFileSuccess:function(res, file){
+            if (res.code == 200){
+                this.editForm.file_url = res.data.url;
+                $("#showFile").show();
+            }else{
+                this.$message.error('上传文件失败');
+            }
+        },
+        beforeUploadFile:function(file){
+            const isLt4M = file.size / 1024 / 1024 < 0.5;
+            if (!isLt4M) {
+              this.$message.error('上传图片大小不能超过 500KB!');
+            }
+            this.editForm.file_name = file.name;
+            this.isfileUploading = true;
+            return  isLt4M;
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+
+       handlePictureCardPreview(file) {
+        this.dialogImageUrl = file.url;
+        this.dialogVisible = true;
+      }
+    }
+});
+</script>
+@endsection

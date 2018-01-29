@@ -9,10 +9,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class PlaceOrder extends Model
+class Banner extends Model
 {
-    protected $connection = 'quanyan_place';
-    protected $table = "tb_biz_place_order";
+    protected $table = "jjcc_banner";
     protected $guarded = [];
     public $timestamps = false;
 }
