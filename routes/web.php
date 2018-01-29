@@ -58,6 +58,12 @@ Route::middleware('checkLogin')->group(function(){
         Route::any('remove', 'Role@remove');
         Route::any('set/auth', 'Role@setAuth');
     });
-
+    Route::group(["prefix" => "news"], function () {
+        Route::any('index', 'News@index');
+        Route::any('add', 'News@add');
+        Route::any('lists', 'News@list');
+        Route::any('save', 'News@save');
+        Route::any('remove', 'News@remove');
+    });
 
 });
