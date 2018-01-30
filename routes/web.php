@@ -59,9 +59,11 @@ Route::middleware('checkLogin')->group(function(){
     Route::group(["prefix" => "news"], function () {
         Route::any('index', 'News@index');
         Route::any('add', 'News@add');
-        Route::any('lists', 'News@list');
+        Route::any('lists', 'News@lists');
         Route::any('save', 'News@save');
         Route::any('remove', 'News@remove');
+        Route::any('batchRemove', 'News@batchRemove');
+        Route::any('publish', 'News@publish');
     });
 
     Route::any('/admin', 'Index@index');

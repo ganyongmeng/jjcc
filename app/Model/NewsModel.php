@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class NewsModel extends Model
 {
-    protected $table = "news";
+    protected $table = "jjcc_news";
     protected $guarded = [];
     public $incrementing = true;
 

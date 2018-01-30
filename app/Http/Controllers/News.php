@@ -6,6 +6,7 @@ use App\Logic\NewsLogic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Logic\MenuLogic;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class News extends Controller
@@ -16,6 +17,7 @@ class News extends Controller
     public function index(){
         $tempData = [
             'title' => '新闻管理',
+            'types' => NewsLogic::$types,
             'active_menu_flag' => 'content_news',
         ];
         return view('news/index',$tempData);
@@ -56,18 +58,49 @@ class News extends Controller
         return $this->response($res);
     }
 
-    public function status() {
+    public function publish() {
         $id = \request('id');
-        $status = request('status');
+        $status = \request('status');
         $logic = new NewsLogic();
         $res = $logic->setStatus($id, $status);
-        return $this->response($res);
+        return $this->response($res['code'], [], $res['msg']);
+    }
+
+    public function batchPublish() {
+        $ids = \request('ids');
+        DB::beginTransaction();
+        foreach($ids as $id) {
+            $logic = new NewsLogic();
+            $res = $logic->setStatus($id, NewsLogic::STATUS_PUBLISHED);
+            if ($res['code']!= 200) {
+                DB::rollBack();
+                return $this->response($res);
+            }
+        }
+        DB::commit();
+        return $this->response(200, [], '操作成功');
     }
 
     public function remove(Request $req){
         $id = \request('id');
         $logic = new NewsLogic();
         $res = $logic->setStatus($id, NewsLogic::STATUS_DELETED);
-        return $this->response($res);
+        return $this->response($res['code'], [], $res['msg']);
+    }
+
+    public function batchRemove() {
+        $data = \request();
+        var_dump($data);die();
+        DB::beginTransaction();
+        foreach($ids as $id) {
+            $logic = new NewsLogic();
+            $res = $logic->setStatus($id, NewsLogic::STATUS_DELETED);
+            if ($res['code']!= 200) {
+                DB::rollBack();
+                return $this->response($res);
+            }
+        }
+        DB::commit();
+        return $this->response(200, [], '操作成功');
     }
 }

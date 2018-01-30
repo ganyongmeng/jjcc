@@ -8,9 +8,19 @@ use Illuminate\Support\Facades\DB;
 
 class NewsLogic extends Logic
 {
-    const STATUS_PUBLISHED = 'published';
-    const STATUS_DELETED = 'deleted';
-    const STATUS_DEFAULT = 'default';
+    const STATUS_PUBLISHED = 1;
+    const STATUS_DELETED = -1;
+    const STATUS_DEFAULT = 0;
+
+    const TYPE_1 = 10;
+    const TYPE_2 = 20;
+    const TYPE_3 = 30;
+
+    public static $types = [
+        self::TYPE_1 => ['name'=>'类型1', 'id'=>self::TYPE_1],
+        self::TYPE_2 => ['name'=>'类型2', 'id'=>self::TYPE_2],
+        self::TYPE_3 => ['name'=>'类型3', 'id'=>self::TYPE_3],
+    ];
 
     public function add($data){
         $validator = \Validator::make($data, [
@@ -38,7 +48,7 @@ class NewsLogic extends Logic
             $news = NewsModel::create($data);
             NewsLogic::setStatus($news, $status);
             DB::commit();
-            return ['code'=>200,'msg'=>''];
+            return ['code'=>200,'msg'=>'操作成功'];
         }catch(\Exception $e){
             DB::rollBack();
             info(__CLASS__.' '.__METHOD__.' exception:'.$e->getMessage());
@@ -60,7 +70,6 @@ class NewsLogic extends Logic
             return ['code'=>303,'msg'=>$errors];
         }
 
-
         $count = NewsModel::where('id','!=',$data['id'])->where('link', $data['link'])->count();
         if ($count>0){
             return ['code'=>502,'msg'=>'该链接已存在！'];
@@ -76,7 +85,7 @@ class NewsLogic extends Logic
             NewsModel::where('id',$id)->update($updateData);
             NewsLogic::setStatus($id, $data['status']);
             DB::commit();
-            return ['code'=>200,'msg'=>''];
+            return ['code'=>200,'msg'=>'操作成功'];
         }catch(\Exception $e){
             DB::rollBack();
             info(__CLASS__.' '.__METHOD__.' exception:'.$e->getMessage());
@@ -94,9 +103,10 @@ class NewsLogic extends Logic
         }
         try{
             $news = NewsModel::find($id);
+            if (!$news) throw new \Exception('该文章不存在。id:'.$id);
             $news->order = $order;
             $news->save();
-            return ['code'=>200,'msg'=>''];
+            return ['code'=>200,'msg'=>'操作成功'];
         }catch(\Exception $e){
             info(__CLASS__.' '.__METHOD__.' exception:'.$e->getMessage());
             return ['code'=>502,'msg'=>$e->getMessage()];
@@ -110,6 +120,7 @@ class NewsLogic extends Logic
         }
         try{
             $news = is_object($id) ? $id : NewsModel::find($id);
+            if (!$news) throw new \Exception('该文章不存在。id:'.$id);
             if ($news->status != $status) {
                 if ($status == NewsLogic::STATUS_PUBLISHED) {
                     //每次重新发布，都设置当前时间为发布时间。（这个需求是假定的，随时可改）
@@ -118,7 +129,7 @@ class NewsLogic extends Logic
                 $news->status = $status;
                 $news->save();
             }
-            return ['code'=>200,'msg'=>''];
+            return ['code'=>200,'msg'=>'操作成功'];
         }catch(\Exception $e){
             info(__CLASS__.' '.__METHOD__.' exception:'.$e->getMessage());
             return ['code'=>502,'msg'=>$e->getMessage()];
@@ -128,6 +139,7 @@ class NewsLogic extends Logic
     public function search($data){
         $current_page = isset($data['current_page'])?$data['current_page']:1;
         $query = NewsModel::query();
+        $query = $query->where('status', '<>', NewsLogic::STATUS_DELETED);
         if (!empty($data['title'])){
             $query = $query->where('title','like', '%'.$data['title'].'%');
         }
