@@ -66,8 +66,8 @@ class News extends Controller
         return $this->response($res['code'], [], $res['msg']);
     }
 
-    public function batchPublish() {
-        $ids = \request('ids');
+    public function batchPublish(Request $req) {
+        $ids = json_decode_arr($req->get('data'));
         DB::beginTransaction();
         foreach($ids as $id) {
             $logic = new NewsLogic();
@@ -88,13 +88,30 @@ class News extends Controller
         return $this->response($res['code'], [], $res['msg']);
     }
 
-    public function batchRemove() {
-        $data = \request();
-        var_dump($data);die();
+    public function batchRemove(Request $req) {
+        $ids = json_decode_arr($req->get('data'));
+        //var_dump($ids);die();
         DB::beginTransaction();
         foreach($ids as $id) {
             $logic = new NewsLogic();
             $res = $logic->setStatus($id, NewsLogic::STATUS_DELETED);
+            if ($res['code']!= 200) {
+                DB::rollBack();
+                return $this->response($res);
+            }
+        }
+        DB::commit();
+        return $this->response(200, [], '操作成功');
+    }
+
+    public function batchOrder(Request $req) {
+        $data = json_decode_arr($req->get('data'));
+        DB::beginTransaction();
+        foreach($data as $v) {
+            $id = $v[0];
+            $order = $v[1];
+            $logic = new NewsLogic();
+            $res = $logic->setOrder($id, $order);
             if ($res['code']!= 200) {
                 DB::rollBack();
                 return $this->response($res);

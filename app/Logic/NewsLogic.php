@@ -146,7 +146,8 @@ class NewsLogic extends Logic
         if (!empty($data['type'])){
             $query = $query->where('type', $data['type']);
         }
-        $query = $query->orderBy('order', 'asc')->orderBy('pub_time', 'desc');
+        $query = $query->orderBy('order', 'asc');
+        //$query = $query->orderBy('pub_time', 'desc');
         $fields = ['id','title','type','pub_time', 'status', 'order'];
         $res = $query->paginate(PAGE_SIZE,$fields,'',$current_page)->toArray();
         return $res;

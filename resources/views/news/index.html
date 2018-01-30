@@ -17,9 +17,10 @@
             <el-button @click="reset">重置</el-button>
         </el-form-item>
         <div class="right_btn_box">
-            <el-button type="primary" icon="plus" @click="" style="float:left;">添加</el-button>
-            <el-button type="primary" @click="" style="float:left;">显示</el-button>
+            <el-button type="primary" icon="plus" @click="add" style="float:left;">添加</el-button>
             <el-button type="warning" @click="batchRemove" style="float:left;">删除</el-button>
+            <el-button type="primary" @click="batchPublish" style="float:left;">显示</el-button>
+            <el-button type="primary" @click="batchOrder" style="float:left;">更新排序</el-button>
         </div>
     </el-form>
 </div>
@@ -37,10 +38,10 @@
         </el-table-column>
         <el-table-column prop="published" label="是否显示" align="center">
             <template scope="scope">
-                <el-switch name="xxx" v-model="scope.row.status" @change="publish" :on-value="1" :off-value="0" width="58" on-text="是" off-text="否"></el-switch>
+                <el-switch v-model="scope.row.status" @change="publish(scope.row)" :active-value="1" :inactive-value="0" width="58" on-text="是" off-text="否"></el-switch>
             </template>
         </el-table-column>
-        <el-table-column prop="published" label="排序" align="center">
+        <el-table-column prop="published" label="排序" align="center" width="120">
             <template scope="scope">
                 <el-input v-model="scope.row.order"></el-input>
             </template>
@@ -94,9 +95,13 @@ var vapp = new Vue({
             this.searchForm = {title:'',type:''};
             this.search();
         },
-        publish:function(status){
-            var me = $(this);
-            var id = 111;
+        add: function(){
+            window.location.href="/news/add";
+        },
+
+        publish:function(row){
+            var id = row.id;
+            var status = row.status;
             var self = this;
             httpPost('/news/publish',{status:status, id:id},function(data){
                 if (data.code==200){
@@ -106,6 +111,29 @@ var vapp = new Vue({
                     self.search();
                 }
             });
+        },
+        batchPublish:function(){
+            var self = this;
+            var tableData = this.multipleSelection;
+            if (tableData.length==0) return;
+            var postArr = [];
+            for (v in tableData) {
+                postArr.push(tableData[v].id);
+            }
+            var postData = JSON.stringify(postArr);
+            this.$confirm('确定要发布所选条目？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(function() {
+                httpPost('/news/batchPublish',{data:postData},function(data){
+                    if (data.code === 200){
+                        alertMessages(self, 'success', '', data.msg);
+                        self.search();
+                    }else{
+                        alertMessages(self, 'error', '', data.msg);
+                    }
+                });
+            }).catch(function(){});
         },
         remove:function(id){
             var self = this;
@@ -126,12 +154,12 @@ var vapp = new Vue({
         batchRemove:function(){
             var self = this;
             var tableData = this.multipleSelection;
+            if (tableData.length==0) return;
             var postArr = [];
             for (v in tableData) {
-                postArr.push({'id':tableData[v].id});
+                postArr.push(tableData[v].id);
             }
             var postData = JSON.stringify(postArr);
-            //console.log(postData);
             this.$confirm('确定要删除所选条目？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
@@ -145,6 +173,24 @@ var vapp = new Vue({
                     }
                 });
             }).catch(function(){});
+        },
+        batchOrder:function(){
+            var self = this;
+            var tableData = this.searchData.data;
+            if (tableData.length==0) return;
+            var postArr = [];
+            for (v in tableData) {
+                postArr.push([tableData[v].id, tableData[v].order]);
+            }
+            var postData = JSON.stringify(postArr);
+            httpPost('/news/batchOrder',{data:postData},function(data){
+                if (data.code === 200){
+                    alertMessages(self, 'success', '', data.msg);
+                    self.search();
+                }else{
+                    alertMessages(self, 'error', '', data.msg);
+                }
+            });
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;

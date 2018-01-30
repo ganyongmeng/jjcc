@@ -64,6 +64,8 @@ Route::middleware('checkLogin')->group(function(){
         Route::any('remove', 'News@remove');
         Route::any('batchRemove', 'News@batchRemove');
         Route::any('publish', 'News@publish');
+        Route::any('batchPublish', 'News@batchPublish');
+        Route::any('batchOrder', 'News@batchOrder');
     });
 
     Route::any('/admin', 'Index@index');
