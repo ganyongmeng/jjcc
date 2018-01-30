@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Home;
 
+use App\Http\Controllers\File;
 use App\Logic\BannerLogic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -18,9 +19,11 @@ class Banner extends Controller
     public function index(){
         $banner = $this->bannerLogic->bannerinfo();
         $banner = (array)$banner;
+        $filelist = empty($banner['filelist'])?'':array_values(unserialize($banner['filelist']));
         $info = [
+            'id'=>empty($banner['id'])?'':$banner['id'],
             'b_time'=>empty($banner['b_time'])?5:$banner['b_time'],
-            'filelists'=>empty($banner['filelist'])?'':unserialize($banner['filelist'])
+            'filelists'=>$filelist
         ];
         $tempData = [
             'title' => 'banner管理',
@@ -35,16 +38,54 @@ class Banner extends Controller
         $validate = Validator::make($data,[
             'filelist'=>'required',
         ]);
-
-        foreach ($data['filelist'] as $k=>&$v){
-            if(empty($v)){
-                unset($data['filelist'][$k]);
-                array_values($data['filelist']);
+        if(!empty($data['filelist'])){
+            foreach ($data['filelist'] as $k=>&$v){
+                if(empty($v)){
+                    unset($data['filelist'][$k]);
+                    array_values($data['filelist']);
+                }
             }
         }
-        $data['id']=1;
+
         if($validate->fails()){
             return $this->response(10001,$validate->errors());
+        }
+        $bool = $this->bannerLogic->editBanner($data);
+
+        if($bool){
+            return $this->response(200);
+        }
+        return $this->response(10000);
+    }
+
+    public function delbanner(Request $request){
+        $data = $request->all();
+        $validate = Validator::make($data,[
+            'id'=>'required',
+            'filename'=>'required',
+            'is_delete'=>'required',
+        ]);
+        if($validate->fails()){
+            return $this->response(10001,$validate->errors());
+        }
+
+        if(!empty($data['filelist'])){
+            foreach ($data['filelist'] as $k=>&$v){
+                if(empty($v)){
+                    unset($data['filelist'][$k]);
+                    array_values($data['filelist']);
+                }
+            }
+        }
+
+        //删除文件
+        if(!empty($data['is_delete'])){
+            $file = new File();
+            $filename = empty($data['filename'])?'':$data['filename'];
+            if(empty($filename)){
+                return $this->response(10002);
+            }
+            $file->delfile($filename);
         }
         $bool = $this->bannerLogic->editBanner($data);
         if($bool){

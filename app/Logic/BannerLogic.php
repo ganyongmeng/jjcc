@@ -25,7 +25,7 @@ class BannerLogic
         $temp = [
             'b_time'=>empty($data['b_time'])?5:intval($data['b_time']),
             'create_time'=>date('Y-m-d H:i:s',time()),
-            'filelist'=>serialize((array)$data['filelist'])
+            'filelist'=>empty($data['filelist'])?'':serialize((array)$data['filelist'])
         ];
         if(!empty($data['is_delete'])){
             unset($temp['b_time']);

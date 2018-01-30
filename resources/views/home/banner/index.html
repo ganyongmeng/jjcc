@@ -45,9 +45,9 @@
                       :multiple="false"
                       :limit=1
                       accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
+                      :before-upload="beforeUploadFile"
                       :data="{file_id:'must_be_random',module:'banner_file'}"
                       :on-preview="handlePictureCardPreview"
-                      :on-remove="handleRemove"
                       :on-success="uploadFileSuccess"
                       :show-file-list=false
                       :headers="uploadheaers">
@@ -56,6 +56,7 @@
                     <el-dialog :visible.sync="dialogVisible" size="tiny">
                       <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                    <p style="color:red;">1920*500px，jpg、png、gif格式，不超过500kb，最多添加8张图片</p>
                 </el-form-item>
                 <el-form-item>
                     <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
@@ -78,7 +79,7 @@
         
         <el-row>
             <el-col>
-                <el-form-item label="名称:" prop="name" required :class="'input-width'">
+                <el-form-item label="名称:" prop="name"  :class="'input-width'">
                     <el-input  v-model="editForm.name" maxlength="20" placeholder="名称" @blur="onblusName"></el-input>
                 </el-form-item>
             </el-col>
@@ -86,7 +87,7 @@
 
         <el-row>
             <el-col>
-                <el-form-item label="banner指向:" prop="link" required :class="'input-width'">
+                <el-form-item label="banner指向:" prop="link"  :class="'input-width'">
                     <el-input  v-model="editForm.link" maxlength="20" @blur="onblusLink" placeholder="链接"></el-input>
                 </el-form-item>
             </el-col>
@@ -107,12 +108,13 @@ var app = new Vue({
     el: '.content-box',
     data:{
         cityData:[],
-        editForm: {name:'',link:'',b_time:5},
+        editForm: {name:'',link:'',b_time:5,id:0},
         dialogVisible:false,
         dialogImageUrl:'',
         uploadheaers:'',
         fileList:[],
         key_index:0,
+        
         rules:{
             // name: [{validator:function(rule,value,callback){
             //     app.editForm.name = value;
@@ -129,15 +131,14 @@ var app = new Vue({
             this.fileList = [];
             this.key_index = 0;
             info = eval('(' + info + ')');
+            this.editForm.id = info.id;
+            this.editForm.b_time = info.b_time;
             if(info.filelists !==null && info.filelists !== ""){
                 this.fileList = info.filelists;
-                this.b_time = info.b_time;
                 this.editForm.name = info.filelists[0].name;
                 this.editForm.link = info.filelists[0].link;
                 this.afterUploadFile(); 
-                console.log(info);
             }
-            
         }
     },
     
@@ -146,6 +147,9 @@ var app = new Vue({
             var self = this;
             self.editForm.filelist = self.fileList;
             console.log(self.editForm);
+            if(self.editForm.filelist == ''){
+                self.$message.error('请先上传图片');return ;
+            }
             httpPost('/admin/banner/edit',self.editForm,function(data){
                 if (data.code === 200){
                     self.$message.success("更新成功");
@@ -159,6 +163,7 @@ var app = new Vue({
         },
         uploadFileSuccess:function(res, file){
             if (res.code == 200){
+                console.log(this.fileList);
                 this.fileList.push({'url':res.data.url,name:'',link:''});   
                 this.afterUploadFile();
             }else{
@@ -169,10 +174,14 @@ var app = new Vue({
             const isLt4M = file.size / 1024 / 1024 < 0.5;
             if (!isLt4M) {
               this.$message.error('上传图片大小不能超过 500KB!');
+              return isLt4M;
             }
-            this.editForm.file_name = file.name;
-            this.isfileUploading = true;
-            return  isLt4M;
+            const checkcount = this.fileList.length > 2;
+            if(checkcount){
+                this.$message.error('最多只能上传8张图片');
+                return false;
+            }
+            return  true;
       },
       afterUploadFile:function(){
         this.$nextTick(function () {
@@ -189,10 +198,13 @@ var app = new Vue({
             confirmButtonText: '确定',
             cancelButtonText: '取消'
         }).then(function() {
-            delete self.fileList[index];
+            var filename = self.fileList[index].url;
+            console.log(self.fileList);
+            self.fileList.splice(index,1);
+            // delete self.fileList[index];
             $.ajax({
-                url:'/admin/banner/edit',
-                data:{filelist:self.fileList,is_delete:1},
+                url:'/admin/banner/del',
+                data:{filelist:self.fileList,is_delete:1,filename:filename,id:self.editForm.id},
                 type:'post',
                 beforeSend: function(request) {
                     request.setRequestHeader("X-CSRF-TOKEN",$('meta[name="csrf-token"]').attr('content'));
@@ -200,7 +212,7 @@ var app = new Vue({
                 success:function(data){
                     if (data.code === 200){
                         self.$message.success("删除成功");
-                        this.afterUploadFile(); 
+                        self.afterUploadFile(); 
                         window.location.reload();
                     }else{
                         self.$message.error(data.msg);
