@@ -15,7 +15,7 @@
             <el-input v-model="editForm.flag" maxlength="30" placeholder="输入菜单唯一标识"></el-input>
         </el-form-item>
         <el-form-item label="菜单图标" prop="icon">
-            <el-input v-model="editForm.icon" maxlength="20" placeholder="输入菜单展示icon"></el-input>
+            <el-input v-model="editForm.icon" maxlength="100" placeholder="输入菜单展示icon"></el-input>
         </el-form-item>
         <el-form-item label="菜单序号" prop="seq" required 
             :rules="[{required:true,message:'必须输入'}]">

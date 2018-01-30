@@ -29,7 +29,7 @@ class File extends Controller
     }
 
     public function delfile($filename){
-        $root = $_SERVER['DOCUMENT_ROOT'] ;
+        $root = $_SERVER['DOCUMENT_ROOT'];
 //        Storage::delete($root.$filename);
         @unlink($root.'/'.$filename);
         return $this->response(200);

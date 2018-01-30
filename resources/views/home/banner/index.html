@@ -176,7 +176,7 @@ var app = new Vue({
               this.$message.error('上传图片大小不能超过 500KB!');
               return isLt4M;
             }
-            const checkcount = this.fileList.length > 2;
+            const checkcount = this.fileList.length > 7;
             if(checkcount){
                 this.$message.error('最多只能上传8张图片');
                 return false;
