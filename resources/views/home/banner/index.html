@@ -88,6 +88,10 @@
         <el-row>
             <el-col>
                 <el-form-item label="banner指向:" prop="link"  :class="'input-width'">
+                    <el-select v-model="editForm.type" prop="type" @change="changeType">
+                        <el-option :value="1" value="1" label="链接">链接</el-option>
+                        <el-option :value="2" value="2" label="官网链接">官网链接</el-option>
+                    </el-select>
                     <el-input  v-model="editForm.link" maxlength="20" @blur="onblusLink" placeholder="链接"></el-input>
                 </el-form-item>
             </el-col>
@@ -108,7 +112,7 @@ var app = new Vue({
     el: '.content-box',
     data:{
         cityData:[],
-        editForm: {name:'',link:'',b_time:5,id:0},
+        editForm: {name:'',link:'',b_time:5,id:0,type:1},
         dialogVisible:false,
         dialogImageUrl:'',
         uploadheaers:'',
@@ -127,7 +131,7 @@ var app = new Vue({
         var info = '{!!$info!!}';
         
         if(info !== null  && info !== ""){
-            this.editForm = {name:'',link:'',b_time:5},
+            this.editForm = {name:'',link:'',b_time:5,id:0,type:1};
             this.fileList = [];
             this.key_index = 0;
             info = eval('(' + info + ')');
@@ -137,6 +141,7 @@ var app = new Vue({
                 this.fileList = info.filelists;
                 this.editForm.name = info.filelists[0].name;
                 this.editForm.link = info.filelists[0].link;
+                this.editForm.type = info.filelists[0].type;
                 this.afterUploadFile(); 
             }
         }
@@ -164,7 +169,7 @@ var app = new Vue({
         uploadFileSuccess:function(res, file){
             if (res.code == 200){
                 console.log(this.fileList);
-                this.fileList.push({'url':res.data.url,name:'',link:''});   
+                this.fileList.push({'url':res.data.url,name:'',link:'',type:1});   
                 this.afterUploadFile();
             }else{
                 this.$message.error('上传文件失败');
@@ -189,6 +194,7 @@ var app = new Vue({
             $("#s"+this.key_index).show();
             this.editForm.name = this.fileList[this.key_index].name;
             this.editForm.link = this.fileList[this.key_index].link;
+            this.editForm.type = this.fileList[this.key_index].type;
         });
         
       },
@@ -238,6 +244,7 @@ var app = new Vue({
             this.key_index = index;
             this.editForm.name = this.fileList[index].name;
             this.editForm.link = this.fileList[index].link;
+            this.editForm.type = this.fileList[index].type;
         }else{
             $("#s"+index).hide();
         }
@@ -253,6 +260,10 @@ var app = new Vue({
             this.$message('请先上传图片');return;
         }
         this.fileList[this.key_index].link = this.editForm.link;
+      },
+      changeType:function(){
+        this.fileList[this.key_index].type = this.editForm.type;
+        console.log(this.editForm.type);
       }
     }
 });
