@@ -15,7 +15,16 @@ class File extends Controller
         $filename = substr($path,strrpos($path,'/')+1);//获取本地存储后的文件名
         $localPath = 'banner/'.$filename;
         Storage::disk('uploads')->put($localPath, file_get_contents($real_path));
-
+        $root = $_SERVER['DOCUMENT_ROOT'] ;
+        $wl_path = $root.'/'.$filename;
+        $filedata = [
+            'client_name'=>$uploadfilename,
+            'server_name'=>$filename,
+            'file_pathname'=>$localPath,
+            'full_pathname'=>$wl_path,
+            'create_time'=>date('Y-m-d H:i:s',time()),
+        ];
+        \App\Model\File::insert($filedata);
         return $this->response(200,['url'=>'/uploads/'.$path]);
     }
 
