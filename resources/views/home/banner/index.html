@@ -16,7 +16,7 @@
 @endsection
 @section('content')
 <div class="cont-box">
-    <el-form :model="editForm" ref="editForm" label-width="120px"  label-position="right">
+    <el-form :model="editForm" :rules="rules" ref="editForm" label-width="120px"   label-position="right">
     <div style="padding-top: 30px;">
         <h3></h3>
     </div>
@@ -36,38 +36,71 @@
         
         <el-row>
             <el-col :span="24">
+
                 <el-form-item label="上传banner:">
                     <el-upload 
                       action="/common/file/upload"
                       list-type="picture-card"
-                      name="f1"
-                      :data="{file_id:'f1',module:'banner_file'}"
+                      name="must_be_random"
+                      :multiple="false"
+                      :limit=1
+                      accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
+                      :before-upload="beforeUploadFile"
+                      :data="{file_id:'must_be_random',module:'banner_file'}"
                       :on-preview="handlePictureCardPreview"
-                      :on-remove="handleRemove"
+                      :on-success="uploadFileSuccess"
+                      :show-file-list=false
                       :headers="uploadheaers">
                       <i class="el-icon-plus"></i>
                     </el-upload>
                     <el-dialog :visible.sync="dialogVisible" size="tiny">
                       <img width="100%" :src="dialogImageUrl" alt="">
                     </el-dialog>
+                    <p style="color:red;">1920*500px，jpg、png、gif格式，不超过500kb，最多添加8张图片</p>
+                </el-form-item>
+                <el-form-item>
+                    <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
+                      <li class="el-upload-list__item is-success"  @click="showImg(index)">
+                            <img :src="img.url" alt="" class="el-upload-list__item-thumbnail">
+                            <a class="el-upload-list__item-name"><i class="el-icon-document"></i>logo.png </a>
+                            <label class="el-upload-list__item-status-label" :id="'s'+index"  style="display: none;">
+                                <i class="el-icon-upload-success el-icon-check"></i>
+                            </label>
+                            <i class="el-icon-close"></i><!---->
+                            <span class="el-upload-list__item-actions">
+                                <span class="el-upload-list__item-preview"><i @click="handlePictureCardPreview(index)" class="el-icon-view"></i></span>
+                                <span class="el-upload-list__item-delete"><i @click="handleRemove(index)" class="el-icon-delete2"></i></span>
+                            </span>
+                        </li>
+                    </ul>
                 </el-form-item>
             </el-col>
         </el-row>
         
         <el-row>
             <el-col>
-                <el-form-item label="名称:" prop="name" required :class="'input-width'">
-                    <el-input v-model="editForm.name" maxlength="20" placeholder="名称"></el-input>
+                <el-form-item label="名称:" prop="name"  :class="'input-width'">
+                    <el-input  v-model="editForm.name" maxlength="20" placeholder="名称" @blur="onblusName"></el-input>
                 </el-form-item>
             </el-col>
         </el-row>
 
         <el-row>
             <el-col>
-                <el-form-item label="banner指向:" prop="name" required :class="'input-width'">
-                    <el-input v-model="editForm.name" maxlength="20" placeholder="名称"></el-input>
+                <el-form-item label="banner指向:" prop="link"  :class="'input-width'">
+                    <el-select v-model="editForm.type" prop="type" @change="changeType">
+                        <el-option :value="1" value="1" label="链接">链接</el-option>
+                        <el-option :value="2" value="2" label="官网链接">官网链接</el-option>
+                    </el-select>
+                    <el-input  v-model="editForm.link" maxlength="20" @blur="onblusLink" placeholder="链接"></el-input>
                 </el-form-item>
             </el-col>
+        </el-row>
+
+        <el-row>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('editForm')">保 存</el-button>
+            </el-form-item>
         </el-row>
 
     </el-form>
@@ -75,28 +108,69 @@
 @endsection
 @section('script')
 <script>
-
 var app = new Vue({
     el: '.content-box',
     data:{
         cityData:[],
-        editForm: {name:'',b_time:5},
+        editForm: {name:'',link:'',b_time:5,id:0,type:1},
         dialogVisible:false,
         dialogImageUrl:'',
-        uploadheaers:''
+        uploadheaers:'',
+        fileList:[],
+        key_index:0,
+        
+        rules:{
+            // name: [{validator:function(rule,value,callback){
+            //     app.editForm.name = value;
+            //     console.log(app.editForm.name);
+            // },trigger: 'blur',message: '请填写名称',}]
+        },
     },
     created:function(){
         this.uploadheaers = {'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')};
-    },
-    methods: {
+        var info = '{!!$info!!}';
         
+        if(info !== null  && info !== ""){
+            this.editForm = {name:'',link:'',b_time:5,id:0,type:1};
+            this.fileList = [];
+            this.key_index = 0;
+            info = eval('(' + info + ')');
+            this.editForm.id = info.id;
+            this.editForm.b_time = info.b_time;
+            if(info.filelists !==null && info.filelists !== ""){
+                this.fileList = info.filelists;
+                this.editForm.name = info.filelists[0].name;
+                this.editForm.link = info.filelists[0].link;
+                this.editForm.type = info.filelists[0].type;
+                this.afterUploadFile(); 
+            }
+        }
+    },
+    
+    methods: {
+        submitForm:function(formName) {
+            var self = this;
+            self.editForm.filelist = self.fileList;
+            console.log(self.editForm);
+            if(self.editForm.filelist == ''){
+                self.$message.error('请先上传图片');return ;
+            }
+            httpPost('/admin/banner/edit',self.editForm,function(data){
+                if (data.code === 200){
+                    self.$message.success("更新成功");
+                }else{
+                    self.$message.error(data.msg);
+                }
+            });
+        },
         resetForm:function(formName) {
             this.$refs[formName].resetFields();
         },
         uploadFileSuccess:function(res, file){
             if (res.code == 200){
-                this.editForm.file_url = res.data.url;
-                $("#showFile").show();
+                console.log(this.fileList);
+                this.fileList.push({'url':res.data.url,name:'',link:'',type:1});   
+                this.afterUploadFile();
             }else{
                 this.$message.error('上传文件失败');
             }
@@ -105,18 +179,91 @@ var app = new Vue({
             const isLt4M = file.size / 1024 / 1024 < 0.5;
             if (!isLt4M) {
               this.$message.error('上传图片大小不能超过 500KB!');
+              return isLt4M;
             }
-            this.editForm.file_name = file.name;
-            this.isfileUploading = true;
-            return  isLt4M;
+            const checkcount = this.fileList.length > 7;
+            if(checkcount){
+                this.$message.error('最多只能上传8张图片');
+                return false;
+            }
+            return  true;
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      afterUploadFile:function(){
+        this.$nextTick(function () {
+            $(".el-upload-list__item-status-label").hide();
+            $("#s"+this.key_index).show();
+            this.editForm.name = this.fileList[this.key_index].name;
+            this.editForm.link = this.fileList[this.key_index].link;
+            this.editForm.type = this.fileList[this.key_index].type;
+        });
+        
+      },
+      handleRemove(index) {
+        var self = this;
+        this.$confirm('确定删除图片？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消'
+        }).then(function() {
+            var filename = self.fileList[index].url;
+            console.log(self.fileList);
+            self.fileList.splice(index,1);
+            // delete self.fileList[index];
+            $.ajax({
+                url:'/admin/banner/del',
+                data:{filelist:self.fileList,is_delete:1,filename:filename,id:self.editForm.id},
+                type:'post',
+                beforeSend: function(request) {
+                    request.setRequestHeader("X-CSRF-TOKEN",$('meta[name="csrf-token"]').attr('content'));
+                },
+                success:function(data){
+                    if (data.code === 200){
+                        self.$message.success("删除成功");
+                        self.afterUploadFile(); 
+                        window.location.reload();
+                    }else{
+                        self.$message.error(data.msg);
+                    }
+                }
+            });
+          }).catch(function (error) {
+            console.log(error);
+        });
       },
 
-       handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url;
+      handlePictureCardPreview(index) {
+        this.dialogImageUrl = this.fileList[index].url;
         this.dialogVisible = true;
+        
+      },
+       
+      showImg:function(index){
+        console.log(index);
+        $(".el-upload-list__item-status-label").hide();
+        if($("#s"+index).is(':hidden')){
+            $("#s"+index).show();
+            this.key_index = index;
+            this.editForm.name = this.fileList[index].name;
+            this.editForm.link = this.fileList[index].link;
+            this.editForm.type = this.fileList[index].type;
+        }else{
+            $("#s"+index).hide();
+        }
+      },
+      onblusName:function(){
+        if(this.fileList.length <= 0){
+            this.$message('请先上传图片');return;
+        }
+        this.fileList[this.key_index].name = this.editForm.name;
+      },
+      onblusLink:function(){
+        if(this.fileList.length <= 0){
+            this.$message('请先上传图片');return;
+        }
+        this.fileList[this.key_index].link = this.editForm.link;
+      },
+      changeType:function(){
+        this.fileList[this.key_index].type = this.editForm.type;
+        console.log(this.editForm.type);
       }
     }
 });
