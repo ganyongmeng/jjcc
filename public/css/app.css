@@ -1,4 +1,4 @@
-html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#fff}
+html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#f2f2f2}
 .nav-menu{border-radius: 0;width: 220px;height: 100%;position: fixed;top:0;left:0;
     z-index: 1001;overflow-x: hidden;}
 .el-menu{border-radius: 0;height: 100%;background: #fff;}
@@ -33,7 +33,7 @@ html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#fff}
 .el-input{height: 36px;font-size: 12px;}
 .el-input__inner{height: 36px;font-size: 12px;}
 
-.search-form{background: #f2f2f2;padding: 20px}
+.search-form{background: #fff;padding: 20px}
 .el-row {margin-bottom: 10px;height: 45px;}
 .el-row .el-input{width: 160px;}
 .el-row .el-form-item__label{width: 60px;text-align: left;font-size: 12px;}
@@ -41,6 +41,7 @@ html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#fff}
 
 
 .lark-table{margin-top:20px;}
+.el-table{border: 1px solid #ebebeb;}
 
 .a-link{color:#E17A0B;cursor:pointer;}
 
