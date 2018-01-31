@@ -1,6 +1,6 @@
 /* page loading being */
 var menuV = new Vue({
-    el: '.nav-menu',
+    el: '.el-aside',
     data:{
         unique: true,
     },
