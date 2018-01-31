@@ -12,7 +12,7 @@
 </head>
 <body>
 <section class="el-container is-vertical" style="height:100%;">
-    <header class="el-header" style="height: 60px;background: #E17A0B;">
+    <header class="el-header" style="background: #E17A0B;">
         <div class="logo_box">
             <span>家简呈出</span>
         </div>
@@ -47,8 +47,13 @@
                 @endforeach
             </el-menu>
         </aside>
-        <main class="el-main content-box">
-            @yield('content')
+        <main class="el-main">
+            <div class="main_header">
+                {{$title}}
+            </div>
+            <div class="content-box">
+                @yield('content')
+            </div>
         </main>
     </section>
 </section>

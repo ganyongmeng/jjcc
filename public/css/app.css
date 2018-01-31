@@ -10,8 +10,8 @@ html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#f2f2f
 .el-submenu__title i {color: #333;}
 .menu_title{font-weight: 600;font-size: 14px;}
 
-.el-header{color: #fff;line-height: 60px;}
-.el-header .logo_box{height: 60px;color: #fff;font-size: 22px;font-weight: 600px;line-height: 60px;float: left;}
+.el-header{color: #fff;line-height: 50px;}
+.el-header .logo_box{height: 50px;color: #fff;font-size: 22px;font-weight: 600px;line-height: 50px;float: left;}
 .el-header .uif{float: right;}
 .el-header .el-dropdown{float: right;}
 .el-header .el-dropdown-link{cursor: pointer;}
@@ -19,7 +19,10 @@ html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#f2f2f
 .el-icon-false{font-size: 14px;}
 .el-message-box{margin-top: 180px;vertical-align: top;}
 
+.el-main{padding: 0;}
 .content-box{padding: 20px;}
+.main_header{height: 46px;line-height: 46px;background-color: #fff;border-bottom: 1px solid #ebebeb;
+    text-indent: 20px;font-size: 16px;}
 
 .el-dialog{ width: 40%}
 .el-dialog__header{font-size: 16px;color: #333;height: 48px;line-height: 48px;padding: 0 20px;border: 1px solid #eee;}
@@ -42,6 +45,7 @@ html,body{margin: 0;padding: 0;height: 100%; width: 100%;background-color:#f2f2f
 
 .lark-table{margin-top:20px;}
 .el-table{border: 1px solid #ebebeb;}
+.el-table td, .el-table th{padding: 8px 0;}
 
 .a-link{color:#E17A0B;cursor:pointer;}
 
