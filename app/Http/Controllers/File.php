@@ -9,11 +9,12 @@ class File extends Controller
 {
     public function upload(Request $request){
         $file_input_name = $request->input('file_id');//上传文件id
+        $module = $request->input('module');//所属模块
         $real_path = $request->file($file_input_name)->path();
         $uploadfilename = $request->file($file_input_name)->getClientOriginalName();//上传文件名
-        $path = $request->file($file_input_name)->store('banner');
+        $path = $request->file($file_input_name)->store($module);
         $filename = substr($path,strrpos($path,'/')+1);//获取本地存储后的文件名
-        $localPath = 'banner/'.$filename;
+        $localPath = $module.'/'.$filename;
         Storage::disk('uploads')->put($localPath, file_get_contents($real_path));
         $root = $_SERVER['DOCUMENT_ROOT'] ;
         $wl_path = $root.'/'.$filename;

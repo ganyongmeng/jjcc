@@ -27,7 +27,7 @@ class Banner extends Controller
         ];
         $tempData = [
             'title' => 'banner管理',
-            'active_menu_flag' => '',
+            'active_menu_flag' => 'banner',
             'info'=>json_encode($info),
         ];
         return view('home/banner/index',$tempData);
