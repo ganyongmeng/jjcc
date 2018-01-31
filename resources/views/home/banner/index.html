@@ -43,7 +43,7 @@
                       list-type="picture-card"
                       name="must_be_random"
                       :multiple="false"
-                      :limit=1
+                      :limit=8
                       accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
                       :before-upload="beforeUploadFile"
                       :data="{file_id:'must_be_random',module:'banner'}"
@@ -60,7 +60,7 @@
                 </el-form-item>
                 <el-form-item>
                     <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
-                      <li class="el-upload-list__item is-success"  @click="showImg(index)">
+                      <li class="el-upload-list__item is-success border"   @click="showImg(index)">
                             <img :src="img.url" alt="" class="el-upload-list__item-thumbnail">
                             <a class="el-upload-list__item-name"><i class="el-icon-document"></i>logo.png </a>
                             <label class="el-upload-list__item-status-label" :id="'s'+index"  style="display: none;">
@@ -112,7 +112,7 @@ var app = new Vue({
     el: '.content-box',
     data:{
         cityData:[],
-        editForm: {name:'',link:'',b_time:5,id:0,type:1},
+        editForm: {name:'',link:'',b_time:5,id:0,type:"1"},
         dialogVisible:false,
         dialogImageUrl:'',
         uploadheaers:'',
@@ -131,7 +131,7 @@ var app = new Vue({
         var info = '{!!$info!!}';
         
         if(info !== null  && info !== ""){
-            this.editForm = {name:'',link:'',b_time:5,id:0,type:1};
+            this.editForm = {name:'',link:'',b_time:5,id:0,type:"1"};
             this.fileList = [];
             this.key_index = 0;
             info = eval('(' + info + ')');
@@ -139,9 +139,6 @@ var app = new Vue({
             this.editForm.b_time = info.b_time;
             if(info.filelists !==null && info.filelists !== ""){
                 this.fileList = info.filelists;
-                this.editForm.name = info.filelists[0].name;
-                this.editForm.link = info.filelists[0].link;
-                this.editForm.type = info.filelists[0].type;
                 this.afterUploadFile(); 
             }
         }
@@ -168,8 +165,7 @@ var app = new Vue({
         },
         uploadFileSuccess:function(res, file){
             if (res.code == 200){
-                console.log(this.fileList);
-                this.fileList.push({'url':res.data.url,name:'',link:'',type:1});   
+                this.fileList.push({'url':res.data.url,name:'',link:'',type:"1"});   
                 this.afterUploadFile();
             }else{
                 this.$message.error('上传文件失败');
@@ -190,11 +186,19 @@ var app = new Vue({
       },
       afterUploadFile:function(){
         this.$nextTick(function () {
+            this.key_index = this.fileList.length - 1;  
+            if(this.key_index < 0){
+                this.key_index = 0;
+            }
+            $(".border").removeAttr("style");
+            $("#s"+this.key_index).parent().css('border','3px #FF7940 solid'); 
             $(".el-upload-list__item-status-label").hide();
             $("#s"+this.key_index).show();
+            
             this.editForm.name = this.fileList[this.key_index].name;
             this.editForm.link = this.fileList[this.key_index].link;
             this.editForm.type = this.fileList[this.key_index].type;
+            console.log(this.editForm);
         });
         
       },
@@ -219,7 +223,7 @@ var app = new Vue({
                     if (data.code === 200){
                         self.$message.success("删除成功");
                         self.afterUploadFile(); 
-                        window.location.reload();
+                        // window.location.reload();
                     }else{
                         self.$message.error(data.msg);
                     }
@@ -237,11 +241,12 @@ var app = new Vue({
       },
        
       showImg:function(index){
-        console.log(index);
+        
         $(".el-upload-list__item-status-label").hide();
+        $(".border").removeAttr("style");
+        $("#s"+index).parent().css('border','3px #FF7940 solid');
         if($("#s"+index).is(':hidden')){
             $("#s"+index).show();
-            $(".is-success").css('border','3px #FF7940 solid;');
             this.key_index = index;
             this.editForm.name = this.fileList[index].name;
             this.editForm.link = this.fileList[index].link;
@@ -249,6 +254,7 @@ var app = new Vue({
         }else{
             $("#s"+index).hide();
         }
+        console.log(this.fileList.length);
       },
       onblusName:function(){
         if(this.fileList.length <= 0){
