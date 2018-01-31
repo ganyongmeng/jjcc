@@ -2,17 +2,23 @@
 
 @section('content')
 <div class="lark-header">
-    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-        <el-form-item>
-            <el-input v-model="searchForm.name" placeholder="输入角色名称查询"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" icon="search" @click="search">查询</el-button>
-            <el-button @click="reset">重置</el-button>
-        </el-form-item>
-        <div class="right_btn_box">
-            <el-button type="primary" icon="plus" @click="openEditForm('add')">添加角色</el-button>
-        </div>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline search-form">
+        <el-row>
+            <el-form-item label="操作">
+                <el-button type="primary" icon="plus" @click="openEditForm('add')">添加角色</el-button>
+            </el-form-item>
+        </el-row>
+        <el-row>
+            <el-form-item label="角色名称">
+                <el-input v-model="searchForm.name" placeholder="输入角色名称查询"></el-input>
+            </el-form-item>
+        </el-row>
+        <el-row>
+            <el-form-item label=" ">
+                <el-button type="primary" icon="search" @click="search">查询</el-button>
+                <el-button @click="reset">重置</el-button>
+            </el-form-item>
+        </el-row>
     </el-form>
 </div>
 <div class="lark-table">
@@ -24,9 +30,9 @@
         <el-table-column label="操作" width="220" align="center">
             <template scope="scope">
                 <template v-if="scope.row.id !== {{SUPER_ADMIN_ROLE_ID}}">
-                    <el-button size="small" @click="openEditForm('edit',scope.row)">编辑</el-button>
-                    <el-button size="small" @click="auth(scope.row.id)">授权</el-button>
-                    <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+                    <el-button size="mini" @click="openEditForm('edit',scope.row)">编辑</el-button>
+                    <el-button size="mini" @click="auth(scope.row.id)">授权</el-button>
+                    <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
                 </template>
             </template>
         </el-table-column>
