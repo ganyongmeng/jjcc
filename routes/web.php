@@ -22,7 +22,10 @@ Route::group(["prefix"=>"/",'namespace'=>'Web'],function (){
     Route::any('/test','Index@test');
 });
 
+Route::any('/common/file/upload', 'File@upload');
+
 Route::group(['prefix'=>'admin','namespace'=>'Admin'],function (){
+
 
     Route::any('/login', 'Login@index');
     Route::any('/login/captcha', 'Login@getcaptcha');
@@ -32,9 +35,10 @@ Route::group(['prefix'=>'admin','namespace'=>'Admin'],function (){
 //登录检查
 Route::middleware('checkLogin')->group(function(){
 
-
+    Route::any('/admin', 'Index@index');
     Route::any('/','Index@index');
     Route::any('index','Index@index');
+
 
     //系统管理
     Route::group(['prefix'=>'system','namespace'=>'System'],function(){
@@ -85,9 +89,6 @@ Route::middleware('checkLogin')->group(function(){
         });
 
     });
-
-    Route::any('/admin', 'Index@index');
-    Route::any('/common/file/upload', 'File@upload');
 
 
 });

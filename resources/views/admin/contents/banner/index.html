@@ -136,7 +136,7 @@ var app = new Vue({
             if(self.editForm.filelist == ''){
                 self.$message.error('请先上传图片');return ;
             }
-            httpPost('/admin/banner/edit',self.editForm,function(data){
+            httpPost('/admin/contents/banner/edit',self.editForm,function(data){
                 if (data.code === 200){
                     self.$message.success("更新成功");
                 }else{
@@ -197,7 +197,7 @@ var app = new Vue({
             self.fileList.splice(index,1);
             // delete self.fileList[index];
             $.ajax({
-                url:'/admin/banner/del',
+                url:'/admin/contents/banner/del',
                 data:{filelist:self.fileList,is_delete:1,filename:filename,id:self.editForm.id},
                 type:'post',
                 beforeSend: function(request) {
