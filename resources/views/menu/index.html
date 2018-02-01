@@ -2,26 +2,28 @@
 
 @section('content')
 <div class="lark-header">
-    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-        <el-form-item>
-            <el-input v-model="searchForm.name" placeholder="输入菜单名查询"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-input v-model="searchForm.flag" placeholder="输入菜单标识查询"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-select v-model="searchForm.pid" placeholder="请选择">
-                <el-option label="全部" value="">全部</el-option>
-                <el-option v-for="item in p_menu" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" icon="search" @click="search">查询</el-button>
-            <el-button @click="reset">重置</el-button>
-        </el-form-item>
-        <div class="right_btn_box">
-            <el-button type="primary" icon="plus" @click="openEditForm('add')">添加菜单</el-button>
-        </div>
+    <el-form :inline="true" :model="searchForm" class="demo-form-inline search-form">
+        <el-row>
+            <el-form-item label="菜单名">
+                <el-input v-model="searchForm.name" placeholder="输入菜单名查询"></el-input>
+            </el-form-item>
+            <el-form-item label="菜单标识">
+                <el-input v-model="searchForm.flag" placeholder="输入菜单标识查询"></el-input>
+            </el-form-item>
+            <el-form-item label="父菜单">
+                <el-select v-model="searchForm.pid" placeholder="请选择">
+                    <el-option label="全部" value="">全部</el-option>
+                    <el-option v-for="item in p_menu" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-row>
+        <el-row>
+            <el-form-item label="操作">
+                <el-button type="primary" icon="search" @click="search">查询</el-button>
+                <el-button @click="reset" >重置</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="openEditForm('add')">添加菜单</el-button>
+            </el-form-item>
+        </el-row>
     </el-form>
 </div>
 <div class="lark-table">
@@ -43,8 +45,8 @@
         </el-table-column>
         <el-table-column label="操作" width="160" align="center">
             <template scope="scope">
-                <el-button size="small" @click="openEditForm('edit',scope.row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="remove(scope.row.id)">删除</el-button>
+                <el-button size="mini" @click="openEditForm('edit',scope.row)">编辑</el-button>
+                <el-button size="mini" type="danger" @click="remove(scope.row.id)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
