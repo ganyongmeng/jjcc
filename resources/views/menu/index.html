@@ -4,11 +4,6 @@
 <div class="lark-header">
     <el-form :inline="true" :model="searchForm" class="demo-form-inline search-form">
         <el-row>
-            <el-form-item label="操作">
-                <el-button type="primary" icon="el-icon-plus" @click="openEditForm('add')">添加菜单</el-button>
-            </el-form-item>
-        </el-row>
-        <el-row>
             <el-form-item label="菜单名">
                 <el-input v-model="searchForm.name" placeholder="输入菜单名查询"></el-input>
             </el-form-item>
@@ -23,9 +18,10 @@
             </el-form-item>
         </el-row>
         <el-row>
-            <el-form-item label=" ">
+            <el-form-item label="操作">
                 <el-button type="primary" icon="search" @click="search">查询</el-button>
                 <el-button @click="reset" >重置</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="openEditForm('add')">添加菜单</el-button>
             </el-form-item>
         </el-row>
     </el-form>
