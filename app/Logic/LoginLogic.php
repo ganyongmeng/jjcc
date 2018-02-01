@@ -2,7 +2,7 @@
 
 namespace App\Logic;
 
-use App\Model\Admin;
+use App\Model\System\Admin;
 use Illuminate\Support\Facades\DB;
 
 class LoginLogic extends Logic

@@ -4,8 +4,9 @@
  * author:gym
  * date:2018-01-26
  */
-namespace App\Logic;
+namespace App\Logic\Contents;
 
+use App\Logic\Logic;
 use Illuminate\Support\Facades\DB;
 
 class BannerLogic

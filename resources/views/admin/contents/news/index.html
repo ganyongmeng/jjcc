@@ -78,7 +78,7 @@ var vapp = new Vue({
         search: function(){
             var self = this;
             this.data_loading = true;
-            httpPost('/news/lists',this.searchForm,function(data){
+            httpPost('/admin/contents/news/lists',this.searchForm,function(data){
                 self.data_loading = false;
                 if (data.code === 200){
                     self.searchData = data.data;
@@ -96,14 +96,14 @@ var vapp = new Vue({
             this.search();
         },
         add: function(){
-            window.location.href="/news/add";
+            window.location.href="/admin/contents/news/add";
         },
 
         publish:function(row){
             var id = row.id;
             var status = row.status;
             var self = this;
-            httpPost('/news/publish',{status:status, id:id},function(data){
+            httpPost('/admin/contents/news/publish',{status:status, id:id},function(data){
                 if (data.code==200){
                     alertMessages(self, 'success', '', data.msg);
                 }else{
@@ -125,7 +125,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/news/batchPublish',{data:postData},function(data){
+                httpPost('/admin/contents/news/batchPublish',{data:postData},function(data){
                     if (data.code === 200){
                         alertMessages(self, 'success', '', data.msg);
                         self.search();
@@ -141,7 +141,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/news/remove',{id:id},function(data){
+                httpPost('/admin/contents/news/remove',{id:id},function(data){
                     if (data.code === 200){
                         alertMessages(self, 'success', '', data.msg);
                         self.search();
@@ -164,7 +164,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/news/batchRemove',{data:postData},function(data){
+                httpPost('/admin/contents/news/batchRemove',{data:postData},function(data){
                     if (data.code === 200){
                         alertMessages(self, 'success', '', data.msg);
                         self.search();
@@ -183,7 +183,7 @@ var vapp = new Vue({
                 postArr.push([tableData[v].id, tableData[v].order]);
             }
             var postData = JSON.stringify(postArr);
-            httpPost('/news/batchOrder',{data:postData},function(data){
+            httpPost('/admin/contents/news/batchOrder',{data:postData},function(data){
                 if (data.code === 200){
                     alertMessages(self, 'success', '', data.msg);
                     self.search();

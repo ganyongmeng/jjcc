@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Contents;
 
-use App\Logic\NewsLogic;
+use App\Logic\Contents\NewsLogic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Logic\MenuLogic;
 use Illuminate\Support\Facades\DB;
 use Validator;
 

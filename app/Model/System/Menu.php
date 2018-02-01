@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\System;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * App\Model\Menu
  *
  * @mixin \Eloquent
  */
-class File extends Model
+class Menu extends Model
 {
-    protected $table = "jjcc_file";
+    protected $table = "tb_menu";
     protected $guarded = [];
     public $timestamps = false;
 }

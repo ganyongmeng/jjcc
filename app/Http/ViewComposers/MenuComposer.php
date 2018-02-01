@@ -2,10 +2,10 @@
 
 namespace App\Http\ViewComposers;
 
-use App\Libs\CommonUtils;
+//use App\Libs\CommonUtils;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Logic\MenuLogic;
+use App\Logic\System\MenuLogic;
 
 class MenuComposer {
     private $logic;

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin\System;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Logic\UserLogic;
-use App\Logic\MenuLogic;
+use App\Logic\System\UserLogic;
+use App\Logic\System\MenuLogic;
 use Validator;
 
 class User extends Controller

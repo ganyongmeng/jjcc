@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Contents;
 
 use App\Http\Controllers\File;
-use App\Logic\BannerLogic;
+use App\Logic\Contents\BannerLogic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Validator;

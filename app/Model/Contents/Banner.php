@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model;
+namespace App\Model\Contents;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class File extends Model
+class Banner extends Model
 {
-    protected $table = "jjcc_file";
+    protected $table = "jjcc_banner";
     protected $guarded = [];
     public $timestamps = false;
 }
