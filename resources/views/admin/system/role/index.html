@@ -37,8 +37,8 @@
       :page-size="roleData.per_page" layout="total,  prev, pager, next, jumper" :total="roleData.total">
     </el-pagination>
 </div>
-@include('role.add')
-@include('role.tree')
+@include('admin/system/role.add')
+@include('admin/system/role.tree')
 @endsection
 @section('script')
 <script>
@@ -58,7 +58,7 @@ var vapp = new Vue({
     created:function(){
         this.search();
         var self = this;
-        httpGet('/menu/option',{},function(data){
+        httpGet('/admin/system/menu/option',{},function(data){
             self.menuData = data.data;
         });
     },
@@ -66,7 +66,7 @@ var vapp = new Vue({
         search: function(){
             var self = this;
             this.data_loading = true;
-            httpPost('/role/list',this.searchForm,function(data){
+            httpPost('/admin/system/role/list',this.searchForm,function(data){
                 self.data_loading = false;
                 if (data.code === 200){
                     self.roleData = data.data;
@@ -101,7 +101,7 @@ var vapp = new Vue({
         auth: function(id){
             var self = this;
             this.authData.role_id = id;
-            httpGet('/role/menu',{role_id:id},function(data){
+            httpGet('/admin/system/role/menu',{role_id:id},function(data){
                 if (data.code === 200){
                     self.authData.menu_id = data.data;
                     if (self.$refs['authtree']!==undefined){
@@ -122,7 +122,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/role/remove',{id:id},function(data){
+                httpPost('/admin/system/role/remove',{id:id},function(data){
                     if (data.code === 200){
                         self.$message.success('删除角色成功');
                         self.search();
@@ -136,7 +136,7 @@ var vapp = new Vue({
             var self = this;
             this.$refs['editForm'].validate(function(valid){
                 if(valid){
-                    httpPost('/role/save',self.editForm,function(data){
+                    httpPost('/admin/system/role/save',self.editForm,function(data){
                         if (data.code === 200){
                             self.editFormVisible = false;
                             self.$message.success('保存角色成功');
@@ -151,7 +151,7 @@ var vapp = new Vue({
         saveAuth: function(){
             var self = this;
             this.authData.menu_id = this.$refs.authtree.getCheckedKeys();
-            httpPost('/role/set/auth',this.authData,function(data){
+            httpPost('/admin/system/role/set/auth',this.authData,function(data){
                 if (data.code === 200){
                     self.authVisible = false;
                     self.$message.success('保存角色成功');

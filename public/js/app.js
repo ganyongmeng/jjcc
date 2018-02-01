@@ -59,9 +59,9 @@ var navbarApp = new Vue({
             });
         },
         logout: function(){
-            httpGet('/logout',{},function(data){
+            httpGet('/admin/logout',{},function(data){
                 if (data.code===200){
-                  window.location.href = '/login';
+                  window.location.href = '/admin/login';
                 }
             });
         }
@@ -89,7 +89,7 @@ function httpPost(url,data,callback){
                     message: data.msg,
                     type: 'error',
                     onClose: function(){
-                        window.location.href = '/login';
+                        window.location.href = '/admin/login';
                     }
                 });
             }else{
@@ -101,7 +101,7 @@ function httpPost(url,data,callback){
                 message: '登录失效，请重新登陆',
                 type: 'error',
                 onClose: function(){
-                    window.location.href = '/login';
+                    window.location.href = '/admin/login';
                 }
             });
         }
@@ -122,7 +122,7 @@ function httpGet(url,data,callback){
                     message: data.msg,
                     type: 'error',
                     onClose: function(){
-                        window.location.href = '/login';
+                        window.location.href = '/admin/login';
                     }
                 });
             }else{
@@ -134,7 +134,7 @@ function httpGet(url,data,callback){
                 message: '登录失效，请重新登陆',
                 type: 'error',
                 onClose: function(){
-                    window.location.href = '/login';
+                    window.location.href = '/admin/login';
                 }
             });
         }

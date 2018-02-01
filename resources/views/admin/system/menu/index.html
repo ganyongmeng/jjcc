@@ -54,7 +54,7 @@
       :page-size="menuData.per_page" layout="total,  prev, pager, next, jumper" :total="menuData.total">
     </el-pagination>
 </div>
-@include('menu.add')
+@include('admin/system/menu.add')
 @endsection
 @section('script')
 <script>
@@ -72,7 +72,7 @@ var vapp = new Vue({
     created:function(){
         this.search();
         var self = this;
-        httpGet('/menu/p/option',{},function(data){
+        httpGet('/admin/system/menu/p/option',{},function(data){
             self.p_menu = data.data;
         });
     },
@@ -80,7 +80,7 @@ var vapp = new Vue({
         search: function(){
             var self = this;
             this.data_loading = true;
-            httpPost('/menu/list',this.searchForm,function(data){
+            httpPost('/admin/system/menu/list',this.searchForm,function(data){
                 self.data_loading = false;
                 if (data.code === 200){
                     self.menuData = data.data;
@@ -120,7 +120,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/menu/remove',{id:id},function(data){
+                httpPost('/admin/system/menu/remove',{id:id},function(data){
                     if (data.code === 200){
                         self.$message.success('删除菜单成功');
                         self.search();
@@ -134,7 +134,7 @@ var vapp = new Vue({
             var self = this;
             this.$refs['editForm2'].validate(function(valid) {
                 if(valid){
-                    httpPost('/menu/save',self.editForm,function(data){
+                    httpPost('/admin/system/menu/save',self.editForm,function(data){
                         if (data.code === 200){
                             self.editFormVisible = false;
                             self.$message.success('保存菜单成功');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Home;
+namespace App\Http\Controllers\Web;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -17,7 +17,7 @@ class Index extends Controller
             'title' => '首页',
             'active_menu_flag' => '',
         ];
-        return view('home/index',$tempData);
+        return view('web/index',$tempData);
     }
 
     public function home(){
@@ -25,14 +25,14 @@ class Index extends Controller
             'title' => '首页',
             'active_menu_flag' => '',
         ];
-        return view('home/home',$tempData);
+        return view('web/home',$tempData);
     }
     public function test(){
         $tempData = [
             'title' => '首页',
             'active_menu_flag' => '',
         ];
-        return view('home/test',$tempData);
+        return view('web/test',$tempData);
     }
 
 }

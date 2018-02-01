@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Home;
+namespace App\Http\Controllers\Admin\Contents;
 
 use App\Http\Controllers\File;
 use App\Logic\BannerLogic;
@@ -30,7 +30,7 @@ class Banner extends Controller
             'active_menu_flag' => 'banner',
             'info'=>json_encode($info),
         ];
-        return view('home/banner/index',$tempData);
+        return view('admin/contents/banner/index',$tempData);
     }
 
     public function banneredit(Request $request){

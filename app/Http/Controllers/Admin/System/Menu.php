@@ -1,27 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\System;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Logic\RoleLogic;
 use App\Logic\MenuLogic;
 use Validator;
 
-class Role extends Controller
+class Menu extends Controller
 {
     private $logic;
-    public function __construct(RoleLogic $logic){
+    public function __construct(MenuLogic $logic){
         $this->logic = $logic;
-
     }
 
     public function index(){
         $tempData = [
-            'title' => '角色管理',
-            'active_menu_flag' => 'role',
+            'title' => '菜单管理',
+            'active_menu_flag' => 'menu',
         ];
-        return view('role/index',$tempData);
+        return view('admin/system/menu/index',$tempData);
     }
 
     public function list(Request $req){
@@ -30,13 +28,12 @@ class Role extends Controller
         return $this->response(200,$res);
     }
 
-    public function menu(Request $req){
-        $role_id = $req->input('role_id');
-        $res = $this->logic->menu($role_id);
+    public function option(){
+        $res = $this->logic->tree();
         return $this->response(200,$res);
     }
 
-    public function option(){
+    public function getParentMenuOption(){
         $res = $this->logic->option();
         return $this->response(200,$res);
     }
@@ -45,7 +42,10 @@ class Role extends Controller
         $data = $req->all();
         //验证请求输入的数据
         $validator = Validator::make($data, [
-            'name' => 'required'
+            'pid' => 'required',
+            'name' => 'required',
+            'link' => 'required_unless:pid,0',
+            'seq' => 'bail|required|integer',
         ]);
         if ($validator->fails()){//验证出现错误
             $errors = $validator->errors();
@@ -57,12 +57,6 @@ class Role extends Controller
             $code = $this->logic->add($data);
         }
         
-        return $this->response($code);
-    }
-
-    public function setAuth(Request $req){
-        $data = $req->all();
-        $code = $this->logic->setAuth($data);
         return $this->response($code);
     }
 

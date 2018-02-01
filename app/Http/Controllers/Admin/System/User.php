@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\System;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -21,7 +21,7 @@ class User extends Controller
             'title' => '账号管理',
             'active_menu_flag' => 'user',
         ];
-        return view('user/index',$tempData);
+        return view('admin/system/user/index',$tempData);
     }
 
     public function list(Request $req){

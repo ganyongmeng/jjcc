@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\Contents;
 
 use App\Logic\NewsLogic;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class News extends Controller
             'types' => NewsLogic::$types,
             'active_menu_flag' => 'content_news',
         ];
-        return view('news/index',$tempData);
+        return view('admin/contents/news/index',$tempData);
     }
 
     public function lists(Request $req){
@@ -35,7 +35,7 @@ class News extends Controller
             'title' => '添加新闻',
             'active_menu_flag' => 'content_news_add',
         ];
-        return view('news/add',$tempData);
+        return view('admin/contents/news/add',$tempData);
     }
 
     public function save(Request $req){

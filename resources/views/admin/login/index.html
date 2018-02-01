@@ -31,7 +31,7 @@ body{background-color:#2d3a4b;}
               @keyup.enter.native="submitForm" maxlength="20"></el-input>
             </el-col>
             <el-col :span="8" style="float:right;text-align: right;">
-              <img id="captcha" @click="refreshCaptcha" src="/login/captcha" style="border:solid 1px #bfcbd9;cursor: pointer;">
+              <img id="captcha" @click="refreshCaptcha" src="/admin/login/captcha" style="border:solid 1px #bfcbd9;cursor: pointer;">
             </el-col>
           </el-form-item>
           <el-form-item >
@@ -55,7 +55,7 @@ var appV = new Vue({
           var self = this;
           this.$refs['form2'].validate(function(valid){
             if(valid){
-              httpPost('/dologin',self.form,function(data){
+              httpPost('/admin/dologin',self.form,function(data){
                 if (data.code === 200){
                   window.location.href = '/admin';
                 }else{
@@ -67,7 +67,7 @@ var appV = new Vue({
           });
         },
         refreshCaptcha: function(){
-          $('#captcha').attr('src','/login/captcha?__='+Math.random());
+          $('#captcha').attr('src','/admin/login/captcha?__='+Math.random());
         }
     }
 })

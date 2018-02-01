@@ -1,9 +1,10 @@
 @extends('com.default')
 @section('style')
 <style type="text/css">
-    .cont-box{
-    padding:0 15px;
+.cont-box{
+    padding:0 20px;
     background: #FFFFFF;
+    padding-bottom: 10px;
 }
 
 .input-width .el-input{width:284px;}
@@ -16,94 +17,77 @@
 @endsection
 @section('content')
 <div class="cont-box">
-    <el-form :model="editForm" :rules="rules" ref="editForm" label-width="120px"   label-position="right">
-    <div style="padding-top: 30px;">
-        <h3></h3>
-    </div>
-        <el-row>
-            <el-col :span="24">
-                <el-form-item label="轮播时间:" prop="b_time"  required>
-                    <el-select v-model="editForm.b_time">
-                        <el-option :label="1" value="1">1s</el-option>
-                        <el-option :label="2" value="2">2s</el-option>
-                        <el-option :label="3" value="3">3s</el-option>
-                        <el-option :label="4" value="4">4s</el-option>
-                        <el-option :label="5" value="5">5s</el-option>
-                    </el-select>
-                </el-form-item>
-            </el-col>
-        </el-row>
-        
-        <el-row>
-            <el-col :span="24">
+        <el-form :model="editForm" :rules="rules" ref="editForm" label-width="120px"   label-position="right">
+        <div style="padding-top: 30px;">
+            <h3></h3>
+        </div>
+            
+            <el-form-item label="轮播时间:" prop="b_time"  required>
+                <el-select v-model="editForm.b_time">
+                    <el-option :label="1" value="1">1s</el-option>
+                    <el-option :label="2" value="2">2s</el-option>
+                    <el-option :label="3" value="3">3s</el-option>
+                    <el-option :label="4" value="4">4s</el-option>
+                    <el-option :label="5" value="5">5s</el-option>
+                </el-select>
+            </el-form-item>
+              
+            
+            <el-form-item label="上传banner:">
+                <el-upload 
+                  action="/common/file/upload"
+                  list-type="picture-card"
+                  name="must_be_random"
+                  :multiple="false"
+                  :limit=8
+                  accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
+                  :before-upload="beforeUploadFile"
+                  :data="{file_id:'must_be_random',module:'banner'}"
+                  :on-preview="handlePictureCardPreview"
+                  :on-success="uploadFileSuccess"
+                  :show-file-list=false
+                  :headers="uploadheaers">
+                  <i class="el-icon-plus"></i>
+                </el-upload>
+                <el-dialog :visible.sync="dialogVisible" size="tiny">
+                  <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
+                <p style="color:red;">1920*500px，jpg、png、gif格式，不超过500kb，最多添加8张图片</p>
+            </el-form-item>
+            <el-form-item>
+                <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
+                  <li class="el-upload-list__item is-success border"   @click="showImg(index)">
+                        <img :src="img.url" alt="" class="el-upload-list__item-thumbnail">
+                        <a class="el-upload-list__item-name"><i class="el-icon-document"></i>logo.png </a>
+                        <label class="el-upload-list__item-status-label" :id="'s'+index"  style="display: none;">
+                            <i class="el-icon-upload-success el-icon-check"></i>
+                        </label>
+                        <i class="el-icon-close"></i><!---->
+                        <span class="el-upload-list__item-actions">
+                            <span class="el-upload-list__item-preview"><i @click="handlePictureCardPreview(index)" class="el-icon-view"></i></span>
+                            <span class="el-upload-list__item-delete"><i @click="handleRemove(index)" class="el-icon-delete"></i></span>
+                        </span>
+                    </li>
+                </ul>
+            </el-form-item>
+                
+            <el-form-item label="名称:" prop="name"  :class="'input-width'">
+                <el-input  v-model="editForm.name" maxlength="20" placeholder="名称" @blur="onblusName"></el-input>
+            </el-form-item>
 
-                <el-form-item label="上传banner:">
-                    <el-upload 
-                      action="/common/file/upload"
-                      list-type="picture-card"
-                      name="must_be_random"
-                      :multiple="false"
-                      :limit=8
-                      accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
-                      :before-upload="beforeUploadFile"
-                      :data="{file_id:'must_be_random',module:'banner'}"
-                      :on-preview="handlePictureCardPreview"
-                      :on-success="uploadFileSuccess"
-                      :show-file-list=false
-                      :headers="uploadheaers">
-                      <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <el-dialog :visible.sync="dialogVisible" size="tiny">
-                      <img width="100%" :src="dialogImageUrl" alt="">
-                    </el-dialog>
-                    <p style="color:red;">1920*500px，jpg、png、gif格式，不超过500kb，最多添加8张图片</p>
-                </el-form-item>
-                <el-form-item>
-                    <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
-                      <li class="el-upload-list__item is-success border"   @click="showImg(index)">
-                            <img :src="img.url" alt="" class="el-upload-list__item-thumbnail">
-                            <a class="el-upload-list__item-name"><i class="el-icon-document"></i>logo.png </a>
-                            <label class="el-upload-list__item-status-label" :id="'s'+index"  style="display: none;">
-                                <i class="el-icon-upload-success el-icon-check"></i>
-                            </label>
-                            <i class="el-icon-close"></i><!---->
-                            <span class="el-upload-list__item-actions">
-                                <span class="el-upload-list__item-preview"><i @click="handlePictureCardPreview(index)" class="el-icon-view"></i></span>
-                                <span class="el-upload-list__item-delete"><i @click="handleRemove(index)" class="el-icon-delete"></i></span>
-                            </span>
-                        </li>
-                    </ul>
-                </el-form-item>
-            </el-col>
-        </el-row>
-        
-        <el-row>
-            <el-col>
-                <el-form-item label="名称:" prop="name"  :class="'input-width'">
-                    <el-input  v-model="editForm.name" maxlength="20" placeholder="名称" @blur="onblusName"></el-input>
-                </el-form-item>
-            </el-col>
-        </el-row>
+            <el-form-item label="banner指向:" prop="link"  :class="'input-width'">
+                <el-select v-model="editForm.type" prop="type" @change="changeType">
+                    <el-option :value="1" value="1" label="链接">链接</el-option>
+                    <el-option :value="2" value="2" label="官网链接">官网链接</el-option>
+                </el-select>
+                <el-input  v-model="editForm.link" maxlength="20" @blur="onblusLink" placeholder="链接"></el-input>
+            </el-form-item>
 
-        <el-row>
-            <el-col>
-                <el-form-item label="banner指向:" prop="link"  :class="'input-width'">
-                    <el-select v-model="editForm.type" prop="type" @change="changeType">
-                        <el-option :value="1" value="1" label="链接">链接</el-option>
-                        <el-option :value="2" value="2" label="官网链接">官网链接</el-option>
-                    </el-select>
-                    <el-input  v-model="editForm.link" maxlength="20" @blur="onblusLink" placeholder="链接"></el-input>
-                </el-form-item>
-            </el-col>
-        </el-row>
-
-        <el-row>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('editForm')">保 存</el-button>
             </el-form-item>
-        </el-row>
 
-    </el-form>
+        </el-form>
 </div>
 @endsection
 @section('script')

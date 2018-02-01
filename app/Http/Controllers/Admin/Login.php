@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Logic\LoginLogic;
 use Illuminate\Http\Request;
@@ -20,7 +20,7 @@ class Login extends Controller
         if (session('login')){
             return redirect('/admin');
         }
-        return view('login/index');
+        return view('admin/login/index');
     }
 
     public function doLogin(Request $req){

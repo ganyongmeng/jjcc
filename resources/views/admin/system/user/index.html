@@ -54,7 +54,7 @@
       :page-size="userData.per_page" layout="total, prev, pager, next, jumper" :total="userData.total">
     </el-pagination>
 </div>
-@include('user.add')
+@include('/admin/system/user.add')
 @endsection
 @section('script')
 <script>
@@ -115,7 +115,7 @@ var vapp = new Vue({
     created:function(){
         this.search();
         var self = this;
-        httpGet('/role/option',{},function(data){
+        httpGet('/admin/system/role/option',{},function(data){
             self.roles = data.data;
         });
     },
@@ -123,7 +123,7 @@ var vapp = new Vue({
         search: function(){
             var self = this;
             this.data_loading = true;
-            httpPost('/user/list',this.searchForm,function(data){
+            httpPost('/admin/system/user/list',this.searchForm,function(data){
                 self.data_loading = false;
                 if (data.code === 200){
                     self.userData = data.data;
@@ -164,7 +164,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function() {
-                httpPost('/user/remove',{id:id},function(data){
+                httpPost('/admin/system/user/remove',{id:id},function(data){
                     if (data.code === 200){
                         self.$message.success('删除账号成功');
                         self.search();
@@ -188,7 +188,7 @@ var vapp = new Vue({
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function(){
-                httpPost('/user/passwd/reset',{id:id},function(data){
+                httpPost('/admin/system/user/passwd/reset',{id:id},function(data){
                     if (data.code === 200){
                         self.$message.success('密码重置成功');
                         self.search();
@@ -202,7 +202,7 @@ var vapp = new Vue({
             var self = this;
             this.$refs['editForm'].validate(function(valid){
                 if(valid){
-                    httpPost('/user/save',self.editForm,function(data){
+                    httpPost('/admin/system/user/save',self.editForm,function(data){
                         if (data.code === 200){
                             self.editFormVisible = false;
                             self.$message.success('保存账号成功');

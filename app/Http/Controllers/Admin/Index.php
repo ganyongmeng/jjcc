@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -17,7 +17,7 @@ class Index extends Controller
             'title' => '首页',
             'active_menu_flag' => '',
         ];
-        return view('index/index',$tempData);
+        return view('admin/index/index',$tempData);
     }
 
 }

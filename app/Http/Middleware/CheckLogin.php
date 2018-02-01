@@ -26,7 +26,7 @@ class CheckLogin
                 ];
                 return response($res,200);
             }else{
-                return redirect('/login');
+                return redirect('/admin/login');
             }
         }
         return $next($request);
