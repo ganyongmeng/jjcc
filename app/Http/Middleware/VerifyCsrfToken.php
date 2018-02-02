@@ -12,10 +12,10 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        //场馆请求账单相关接口，无需设防
-        'bill/*',
-        'placebill/*',
-        '/referetoken',
-        'wap/*',
+        //'/referetoken',
+        //'wap/*',
+        //'common/file/upload',
+        'common/file/uploadByEditor',
+        'common/file/delByEditor',
     ];
 }

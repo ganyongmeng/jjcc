@@ -23,6 +23,8 @@ Route::group(["prefix"=>"/",'namespace'=>'Web'],function (){
 });
 
 Route::any('/common/file/upload', 'File@upload');
+Route::any('/common/file/uploadByEditor', 'File@uploadByEditor');
+Route::any('/common/file/delByEditor', 'File@delByEditor');
 
 Route::group(['prefix'=>'admin','namespace'=>'Admin'],function (){
 

@@ -1,61 +1,64 @@
 @extends('com.default')
 
 @section('content')
-<div class="lark-header">
-    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
-        <el-form-item>
-            <el-input v-model="searchForm.title" placeholder="标题" style="width:300px"></el-input>
-        </el-form-item>
-        <el-form-item label="类型">
-            <el-select v-model="searchForm.type">
-                <el-option label="全部" value=""></el-option>
-                <el-option v-for="item in types" :label="item.name" :value="item.id"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" icon="search" @click="search">查询</el-button>
-            <el-button @click="reset">重置</el-button>
-        </el-form-item>
-        <div class="right_btn_box">
-            <el-button type="primary" icon="plus" @click="add" style="float:left;">添加</el-button>
-            <el-button type="warning" @click="batchRemove" style="float:left;">删除</el-button>
-            <el-button type="primary" @click="batchPublish" style="float:left;">显示</el-button>
-            <el-button type="primary" @click="batchOrder" style="float:left;">更新排序</el-button>
-        </div>
-    </el-form>
-</div>
-<div class="lark-table">
-    <el-table ref="multipleTable" :data="searchData.data" v-loading="data_loading" element-loading-text="loading" border style="width: 100%"
-              @selection-change="handleSelectionChange">
+<div class="cont-box">
+    <div class="lark-header">
+        <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+            <el-form-item>
+                <el-input v-model="searchForm.title" placeholder="标题" style="width:300px"></el-input>
+            </el-form-item>
+            <el-form-item label="类型">
+                <el-select v-model="searchForm.type">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option v-for="item in types" :label="item.name" :value="item.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="search" @click="search">查询</el-button>
+                <el-button @click="reset">重置</el-button>
+            </el-form-item>
+            <div class="right_btn_box">
+                <el-button type="primary" icon="plus" @click="add" style="float:left;">添加</el-button>
+                <el-button type="warning" @click="batchRemove" style="float:left;">删除</el-button>
+                <el-button type="primary" @click="batchPublish" style="float:left;">显示</el-button>
+                <el-button type="primary" @click="batchOrder" style="float:left;">更新排序</el-button>
+            </div>
+        </el-form>
+    </div>
+    <div class="lark-table">
+        <el-table ref="multipleTable" :data="searchData.data" v-loading="data_loading" element-loading-text="loading" border style="width: 100%"
+                  @selection-change="handleSelectionChange">
 
-        <el-table-column type="selection" width="55">
-        </el-table-column>
-        <el-table-column prop="title" label="标题" align="center" width="600"></el-table-column>
-        <el-table-column prop="type" label="类型" align="center">
-            <template scope="scope">
-                @{{types[scope.row.type].name}}
-            </template>
-        </el-table-column>
-        <el-table-column prop="published" label="是否显示" align="center">
-            <template scope="scope">
-                <el-switch v-model="scope.row.status" @change="publish(scope.row)" :active-value="1" :inactive-value="0" width="58" on-text="是" off-text="否"></el-switch>
-            </template>
-        </el-table-column>
-        <el-table-column prop="published" label="排序" align="center" width="120">
-            <template scope="scope">
-                <el-input v-model="scope.row.order"></el-input>
-            </template>
-        </el-table-column>
-        <el-table-column label="操作" width="250" align="center">
-            <template scope="scope">
-                <el-button size="small" @click="">编辑</el-button>
-                <el-button size="small" @click="remove(scope.row.id)">删除</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page="searchData.current_page"
-      :page-size="searchData.per_page" layout="total, prev, pager, next, jumper" :total="searchData.total">
-    </el-pagination>
+            <el-table-column type="selection" width="55">
+            </el-table-column>
+            <el-table-column prop="title" label="标题" align="center" width="600"></el-table-column>
+            <el-table-column prop="type" label="类型" align="center">
+                <template scope="scope">
+                    @{{types[scope.row.type].name}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="published" label="是否显示" align="center">
+                <template scope="scope">
+                    <el-switch v-model="scope.row.status" @change="publish(scope.row)" :active-value="1" :inactive-value="0" width="58" on-text="是" off-text="否"></el-switch>
+                </template>
+            </el-table-column>
+            <el-table-column prop="published" label="排序" align="center" width="120">
+                <template scope="scope">
+                    <el-input v-model="scope.row.order"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250" align="center">
+                <template scope="scope">
+                    <el-button size="small" @click="">预览</el-button>
+                    <el-button size="small" @click="">编辑</el-button>
+                    <el-button size="small" @click="remove(scope.row.id)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination @current-change="handleCurrentChange" :current-page="searchData.current_page"
+          :page-size="searchData.per_page" layout="total, prev, pager, next, jumper" :total="searchData.total">
+        </el-pagination>
+    </div>
 </div>
 @endsection
 @section('script')

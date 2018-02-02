@@ -4,12 +4,8 @@
 <link rel="stylesheet" type="text/css" href="http://www.jq22.com/jquery/font-awesome.4.6.0.css">
 <link href="/css/froala_editor.min.css" rel="stylesheet" type="text/css">
 <style>
-    body {
-        text-align: center;
-    }
     #editor {
         width: 80%;
-        margin: auto;
         text-align: left;
     }
 </style>
@@ -23,11 +19,32 @@
     }
 
     .input-width .el-input{width:284px;}
-    .pic-uploader.hide-upload-btn .el-upload{
-        display:none;
-    }
     .cont-box .el-textarea{width:360px;}
     .cont-box .el-radio__input.is-checked+.el-radio__label{color:#5a5e66;}
+
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 140px;
+        height: 78px;
+        line-height: 78px;
+        text-align: center;
+    }
+    .avatar {
+        width: 140px;
+        height: 78px;
+        display: block;
+    }
 </style>
 @endsection
 @section('content')
@@ -50,40 +67,18 @@
 
         <el-form-item label="封面图片:" required>
             <el-upload
-              action="/common/file/upload"
-              list-type="picture-card"
-              name="must_be_random"
-              :multiple="false"
-              :limit=1
-              accept="image/gif,image/jpeg,image/jpg,image/png,image/bmp"
-              :before-upload="beforeUploadFile"
-              :data="{file_id:'must_be_random',module:'banner'}"
-              :on-preview="handlePictureCardPreview"
-              :on-success="uploadFileSuccess"
-              :show-file-list=false
-              :headers="uploadheaders">
-              <i class="el-icon-plus"></i>
+                    name="must_be_random"
+                    :data="{file_id:'must_be_random',module:'news'}"
+                    class="avatar-uploader"
+                    action="/common/file/upload"
+                    :show-file-list="false"
+                    :headers="uploadheaders"
+                    :on-success="uploadFileSuccess"
+                    :before-upload="beforeUploadFile">
+                <img v-if="editForm.cover" :src="editForm.cover" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-            <el-dialog :visible.sync="dialogVisible" size="tiny">
-              <img width="100%" :src="dialogImageUrl" alt="">
-            </el-dialog>
-            <p style="color:red;">请上传16:9的图片，最大尺寸为1400*788px，格式为jpg，文件大小不超过300KB</p>
-        </el-form-item>
-        <el-form-item>
-            <ul class="el-upload-list el-upload-list--picture-card" v-for="(img,index) in fileList">
-              <li class="el-upload-list__item is-success border"   @click="showImg(index)">
-                    <img :src="img.url" alt="" class="el-upload-list__item-thumbnail">
-                    <a class="el-upload-list__item-name"><i class="el-icon-document"></i>logo.png </a>
-                    <label class="el-upload-list__item-status-label" :id="'s'+index"  style="display: none;">
-                        <i class="el-icon-upload-success el-icon-check"></i>
-                    </label>
-                    <i class="el-icon-close"></i><!---->
-                    <span class="el-upload-list__item-actions">
-                        <span class="el-upload-list__item-preview"><i @click="handlePictureCardPreview(index)" class="el-icon-view"></i></span>
-                        <span class="el-upload-list__item-delete"><i @click="handleRemove(index)" class="el-icon-delete"></i></span>
-                    </span>
-                </li>
-            </ul>
+            <div style="color:red;display:block">请上传16:9的图片，最大尺寸为1400*788px，格式为jpg，文件大小不超过300KB</div>
         </el-form-item>
 
         <el-form-item label="原文链接:" prop="link" >
@@ -123,9 +118,29 @@
 <script src="/js/editor/plugins/font_size.min.js"></script>
 <script src="/js/editor/plugins/block_styles.min.js"></script>
 <script src="/js/editor/plugins/video.min.js"></script>
+<script src="/js/editor/langs/zh_cn.js"></script>
 <script>
     $(function(){
-        $('#edit').editable({inlineMode: false, alwaysBlank: true})
+        $('#edit').editable({
+            language: "zh_cn",
+            inlineMode: false,
+            alwaysBlank: true,
+            spellcheck: true,
+            plainPaste: true,
+            enableScript: false,
+            imageUploadURL: '/common/file/uploadByEditor',//上传到本地服务器
+            imageUploadParams: {file_id:'file',module:'news'},
+            imageDeleteURL: '/common/file/delByEditor',//删除图片
+            //imagesLoadURL: 'lib/load_images.php'//管理图片
+            //height: '200px'
+        }).on('editable.afterRemoveImage', function (e, editor, $img) {
+            // Set the image source to the image delete params.
+            editor.options.imageDeleteParams = {src: $img.attr('src')};
+            // Make the delete request
+            editor.deleteImage($img);
+        }).on('editable.beforeImageUpload', function() {
+            //上传图片前处理
+        });
     });
 </script>
 <!--编辑器 end-->
@@ -135,13 +150,9 @@ var app = new Vue({
     el: '.content-box',
     data:{
         cityData:[],
-        editForm: {name:'',link:'',id:'',type:'',fileList:''},
-        dialogVisible:false,
-        dialogImageUrl:'',
-        uploaddheaers:'',
-        fileList:[],
-        key_index:0,
-        
+        editForm: {title:'',link:'',id:'',type:'',cover:'',content:''},
+        uploadheaders:'',
+
         rules:{
             title: [
                 { required: true, message: '请输入标题', trigger: 'blur' },
@@ -159,12 +170,6 @@ var app = new Vue({
 
         if(info && info.id){
             this.editForm = info;
-            this.fileList = [];
-            this.key_index = 0;
-            if(info.filelists){
-                this.fileList = info.filelists;
-                this.afterUploadFile(); 
-            }
         }else {
             this.editForm.link = '{!!$link!!}';
         }
@@ -178,14 +183,19 @@ var app = new Vue({
                 self.$message.error('您的输入有错误，请检查');
                     return false;
                 }
-
-                self.editForm.fileList = self.fileList;
                 console.log(self.editForm);
-                if(!self.editForm.fileList){
-                    self.$message.error('请上传封面图片');return ;
+                if (self.editForm.cover==null || self.editForm.cover=='' || self.editForm.cover==undefined) {
+                    self.$message.error('请上传封面图片');
+                    return false;
                 }
 
+                var content = $("#edit .froala-element").eq(0)[0].innerHTML;
+                self.editForm.content = content;
+                /*if (!self.editForm.content) {
+                }*/
+
                 self.editForm.status = status;
+
                 httpPost('/admin/contents/news/save',self.editForm,function(data){
                     if (data.code === 200){
                         self.$message.success("操作成功");
@@ -200,92 +210,23 @@ var app = new Vue({
         },
         uploadFileSuccess:function(res, file){
             if (res.code == 200){
-                this.fileList.push({'url':res.data.url,name:'',link:'',type:"1"});   
-                this.afterUploadFile();
+                this.editForm.cover = res.data.url;
             }else{
-                this.$message.error('上传文件失败');
+                this.$message.error('上传失败');
             }
         },
         beforeUploadFile:function(file){
-            const isLt4M = file.size / 1024 / 1024 < 0.3;
-            if (!isLt4M) {
-              this.$message.error('上传图片大小不能超过 300KB!');
-              return isLt4M;
+            const isJPG = file.type === 'image/jpeg';
+            const isLt2M = file.size / 1024 / 1024 < 0.3;
+
+            if (!isJPG) {
+                this.$message.error('上传图片只能是 JPG 格式!');
             }
-            const checkcount = this.fileList.length > 7;
-            if(checkcount){
-                this.$message.error('最多只能上传8张图片');
-                return false;
+            if (!isLt2M) {
+                this.$message.error('上传图片大小不能超过 300kb!');
             }
-            return  true;
+            return isJPG && isLt2M;
         },
-        afterUploadFile:function(){
-            this.$nextTick(function () {
-                this.key_index = this.fileList.length - 1;
-                if(this.key_index < 0){
-                    this.key_index = 0;
-                }
-                $(".border").removeAttr("style");
-                $("#s"+this.key_index).parent().css('border','3px #FF7940 solid');
-                $(".el-upload-list__item-status-label").hide();
-                $("#s"+this.key_index).show();
-            });
-
-          },
-          handleRemove(index) {
-            var self = this;
-            this.$confirm('确定删除图片？', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消'
-            }).then(function() {
-                var filename = self.fileList[index].url;
-                console.log(self.fileList);
-                self.fileList.splice(index,1);
-                // delete self.fileList[index];
-                $.ajax({
-                    url:'/admin/banner/del',
-                    data:{filelist:self.fileList,is_delete:1,filename:filename,id:self.editForm.id},
-                    type:'post',
-                    beforeSend: function(request) {
-                        request.setRequestHeader("X-CSRF-TOKEN",$('meta[name="csrf-token"]').attr('content'));
-                    },
-                    success:function(data){
-                        if (data.code === 200){
-                            self.$message.success("删除成功");
-                            self.afterUploadFile();
-                            // window.location.reload();
-                        }else{
-                            self.$message.error(data.msg);
-                        }
-                    }
-                });
-              }).catch(function (error) {
-                console.log(error);
-            });
-          },
-
-          handlePictureCardPreview(index) {
-            this.dialogImageUrl = this.fileList[index].url;
-            this.dialogVisible = true;
-
-          },
-
-          showImg:function(index){
-
-            $(".el-upload-list__item-status-label").hide();
-            $(".border").removeAttr("style");
-            $("#s"+index).parent().css('border','3px #FF7940 solid');
-            if($("#s"+index).is(':hidden')){
-                $("#s"+index).show();
-                this.key_index = index;
-                this.editForm.name = this.fileList[index].name;
-                this.editForm.link = this.fileList[index].link;
-                this.editForm.type = this.fileList[index].type;
-            }else{
-                $("#s"+index).hide();
-            }
-            console.log(this.fileList.length);
-          },
     }
 });
 </script>
