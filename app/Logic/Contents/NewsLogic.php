@@ -32,7 +32,7 @@ class NewsLogic extends Logic
             'status' => 'required',
         ]);
         if ($validator->fails()){//验证出现错误
-            $errors = $validator->errors();
+            $errors = (string)$validator->errors();
             return ['code'=>303,'msg'=>$errors];
         }
 
@@ -66,7 +66,7 @@ class NewsLogic extends Logic
             'status' => 'required',
         ]);
         if ($validator->fails()){//验证出现错误
-            $errors = $validator->errors();
+            $errors = (string)$validator->errors();
             return ['code'=>303,'msg'=>$errors];
         }
 

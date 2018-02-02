@@ -4,9 +4,9 @@
 <div class="lark-header">
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
         <el-form-item>
-            <el-input v-model="searchForm.title" placeholder="新闻名称" style="width:300px"></el-input>
+            <el-input v-model="searchForm.title" placeholder="标题" style="width:300px"></el-input>
         </el-form-item>
-        <el-form-item label="新闻类型">
+        <el-form-item label="类型">
             <el-select v-model="searchForm.type">
                 <el-option label="全部" value=""></el-option>
                 <el-option v-for="item in types" :label="item.name" :value="item.id"></el-option>
@@ -30,8 +30,8 @@
 
         <el-table-column type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="title" label="新闻名称" align="center" width="600"></el-table-column>
-        <el-table-column prop="type" label="新闻类型" align="center">
+        <el-table-column prop="title" label="标题" align="center" width="600"></el-table-column>
+        <el-table-column prop="type" label="类型" align="center">
             <template scope="scope">
                 @{{types[scope.row.type].name}}
             </template>

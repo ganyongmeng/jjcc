@@ -17,7 +17,7 @@ class News extends Controller
         $tempData = [
             'title' => '新闻管理',
             'types' => NewsLogic::$types,
-            'active_menu_flag' => 'content_news',
+            'active_menu_flag' => 'contents_news',
         ];
         return view('admin/contents/news/index',$tempData);
     }
@@ -30,9 +30,14 @@ class News extends Controller
     }
 
     public function add() {
+        $info = [];
+        $link = uniqid();
         $tempData = [
             'title' => '添加新闻',
-            'active_menu_flag' => 'content_news_add',
+            'active_menu_flag' => 'contents_news_add',
+            'info'=>json_encode($info),
+            'types'=>NewsLogic::$types,
+            'link'=>$link,
         ];
         return view('admin/contents/news/add',$tempData);
     }
@@ -41,12 +46,12 @@ class News extends Controller
         $data = $req->all();
         //验证请求输入的数据
         $logic = new NewsLogic();
-        if (isset($data['id'])){//更新
+        if (isset($data['id']) && !empty($data['id'])){//更新
             $res = $logic->update($data);
         }else{
             $res = $logic->add($data);
         }
-        return $this->response($res);
+        return $this->response($res['code'], null, $res['msg']);
     }
 
     public function order() {
